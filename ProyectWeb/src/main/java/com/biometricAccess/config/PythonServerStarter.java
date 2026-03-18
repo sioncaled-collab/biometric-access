@@ -30,7 +30,7 @@ public class PythonServerStarter {
 
             builder.directory(pythonDir);
             builder.inheritIO();
-            builder.start();
+           // builder.start();
 
             System.out.println("Servidor Python iniciado");
         };
