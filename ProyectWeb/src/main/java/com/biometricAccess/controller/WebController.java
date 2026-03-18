@@ -32,7 +32,7 @@ public class WebController {
         return "formulario-de-contacto";
     }
 
-    @GetMapping("/login")
+    @GetMapping("/Login")
     public String login() {
         return "login";
     }
