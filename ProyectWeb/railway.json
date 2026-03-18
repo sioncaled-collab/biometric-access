@@ -1,8 +1,9 @@
 {
   "build": {
-    "builder": "NIXPACKS"
+    "builder": "NIXPACKS",
+    "buildCommand": "cd ProyectWeb && ./mvnw clean package -DskipTests"
   },
   "deploy": {
-    "startCommand": "java -jar target/*.jar"
+    "startCommand": "cd ProyectWeb && java -jar target/*.jar"
   }
 }
