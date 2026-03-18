@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biométrico Facial</title>
+
+<link rel="stylesheet" href="/css/estilo_principal.css">
+
+<style>
+
+.biometrico-container{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.camera-container{
+    position:relative;
+    width:450px;
+}
+
+#video{
+    width:450px;
+    height:340px;
+    border-radius:12px;
+    border:2px solid black;
+}
+
+.holo-frame{
+    position:absolute;
+    top:10%;
+    left:30%;
+    width:180px;
+    height:250px;
+    border:3px solid #00ffc8;
+    border-radius:10px;
+    box-shadow:0 0 20px #00ffc8;
+}
+
+.scan-line{
+    position:absolute;
+    top:0;
+    left:0;
+    width:450px;
+    height:4px;
+    background:#00ffc8;
+    animation:scan 3s infinite linear;
+}
+
+@keyframes scan{
+0%{top:0}
+100%{top:100%}
+}
+
+.btn-validar{
+margin-top:20px;
+padding:12px 30px;
+background:black;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-size:16px;
+}
+
+.resultado{
+margin-top:15px;
+font-size:18px;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+<div class="logo">
+<img src="/images/Logo B.png">
+<h1>Biometric Access</h1>
+</div>
+
+<nav class="nav-bar">
+<ul class="menu">
+<li><a href="/">Inicio</a></li>
+<li><a href="/sobre-nosotros">Sobre Nosotros</a></li>
+<li><a href="/servicios">Servicios</a></li>
+<li><a href="/Formulario-de-contacto">Contacto</a></li>
+<li><a href="/admin" class="active">Administración</a></li>
+</ul>
+</nav>
+</header>
+
+<main>
+
+<section class="banner">
+<h1>Acceso Biométrico</h1>
+<p>Validación facial de usuarios registrados</p>
+</section>
+
+<div class="container_menu_lateral">
+
+<div class="menu-lateral">
+
+<h2>Menú de Administración</h2>
+
+<ul>
+<li><a href="/gestion_de_usuario">Crear Usuario</a></li>
+<li><a href="/Modificar_Usuario">Modificar Usuario</a></li>
+<li><a href="/dar_baja_usuario">Dar de baja Usuario</a></li>
+<li><a href="/correo">Correo Masivo</a></li>
+<li><a href="/reportes">Ver Reportes</a></li>
+<li><a href="/biometrico" class="active">Biométrico Facial</a></li>
+<li><a href="/capturar_foto" class="active">Registro Facial</a></li>
+<li><a href="/logout">Cerrar Sesión</a></li>
+</ul>
+
+</div>
+
+
+<div class="contenido-principal_gestion_de_usuario">
+
+<h3>Validación Biométrica</h3>
+
+<div class="biometrico-container">
+
+<div class="camera-container">
+
+<video id="video" autoplay></video>
+
+<div class="holo-frame"></div>
+
+<div class="scan-line"></div>
+
+</div>
+
+<button class="btn-validar" onclick="validar()">
+Validar Acceso
+</button>
+
+<p id="resultado" class="resultado"></p>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<footer>
+<p>© 2025 Biometric Access</p>
+</footer>
+
+<script>
+
+const video=document.getElementById("video");
+
+navigator.mediaDevices.getUserMedia({video:true})
+.then(stream=>{
+video.srcObject=stream;
+});
+
+
+function validar(){
+
+let canvas=document.createElement("canvas");
+
+canvas.width=video.videoWidth;
+canvas.height=video.videoHeight;
+
+let ctx=canvas.getContext("2d");
+
+ctx.drawImage(video,0,0);
+
+let imgBase64=canvas.toDataURL("image/jpeg");
+
+fetch("http://127.0.0.1:8000/validar",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+imagen:imgBase64
+})
+
+})
+
+.then(r=>r.json())
+
+.then(data=>{
+
+let res=document.getElementById("resultado");
+
+if(data.resultado==="acceso"){
+
+res.style.color="green";
+
+res.textContent="✔ Acceso permitido: "+data.persona;
+
+}
+
+else{
+
+res.style.color="red";
+
+res.textContent="✖ Acceso denegado";
+
+}
+
+})
+
+.catch(()=>{
+
+document.getElementById("resultado").textContent="Error conectando con servidor biométrico";
+
+});
+
+}
+
+</script>
+
+</body>
+
+</html>

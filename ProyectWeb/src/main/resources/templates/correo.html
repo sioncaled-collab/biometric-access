@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correo Masivo</title>
+    <link rel="stylesheet" href="/css/estilo_principal.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">
+            <img src="/images/Logo B.png" alt="Logo Biometric Access">
+            <h1>Biometric Access</h1>
+        </div>
+        <nav class="nav-bar">
+            <ul class="menu">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/sobre-nosotros">Sobre Nosotros</a></li>
+                <li><a href="/servicios">Servicios</a></li>
+                <li><a href="/Formulario-de-contacto">Contacto</a></li>
+                <li><a href="/admin" class="active">Administración</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="banner">
+            <h1>Correo Masivo</h1>
+            <p>Envía mensajes personalizados a múltiples destinatarios desde un archivo CSV.</p>
+        </section>
+
+        <div class="container_menu_lateral">
+            <div class="menu-lateral">
+                <h2>Menú de Administración</h2>
+                <ul>
+                    <li><a href="/gestion_de_usuario">Crear Usuario</a></li>
+                    <li><a href="/Modificar_Usuario">Modificar Usuario</a></li>
+                    <li><a href="/dar_baja_usuario">Dar de baja Usuario</a></li>
+                    <li><a href="/correo" class="active">Correo Masivo</a></li>
+                    <li><a href="/reportes">Ver Reportes</a></li>
+                    <li><a href="/biometrico">Biometrico Facial</a></li>
+                    <li><a href="/capturar_foto" class="active">Registrar Facial</a></li>
+                    <li><a href="/logout">Cerrar Sesión</a></li>
+                </ul>
+            </div>
+
+            <div class="contenido-principal_gestion_de_usuario">
+                <h3>Enviar Correo Masivo</h3>
+                <form action="/send_email" method="post" enctype="multipart/form-data"
+                    class="formulario-correo">
+                    <div class="form-group">
+                        <label for="asunto">Asunto:</label>
+                        <input type="text" id="asunto" name="asunto" placeholder="Escribe el asunto del correo"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mensaje">Mensaje:</label>
+                        <textarea id="mensaje" name="mensaje" rows="6" placeholder="Escribe el contenido del mensaje"
+                            required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="csvFile">Archivo CSV con correos:</label>
+                        <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="plantilla">Plantilla HTML (opcional):</label>
+                        <textarea id="plantilla" name="plantilla" rows="4"
+                            placeholder="Puedes pegar aquí código HTML si lo deseas"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-enviar">📨 Enviar Correos</button>
+                </form>
+
+                <div class="mensaje-confirmacion">
+                    <script>
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.has('exito')) {
+                            document.write('<p style="color:green;">✅ Los correos fueron enviados exitosamente.</p>');
+                        } else if (urlParams.has('error')) {
+                            document.write('<p style="color:red;">❌ Ocurrió un error al enviar los correos. Verifica los datos e inténtalo nuevamente.</p>');
+                        }
+                    </script>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Biometric Access. Todos los derechos reservados.</p>
+    </footer>
+</body>
+
+</html>

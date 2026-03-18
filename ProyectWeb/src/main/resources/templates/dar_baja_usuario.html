@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dar de Baja Usuario</title>
+    <link rel="stylesheet" href="/css/estilo_principal.css">
+</head>
+
+<body>
+<header class="header">
+    <div class="logo">
+        <img src="/images/Logo B.png" alt="Logo Biometric Access">
+        <h1>Biometric Access</h1>
+    </div>
+    <nav class="nav-bar">
+        <ul class="menu">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/sobre-nosotros">Sobre Nosotros</a></li>
+            <li><a href="/servicios">Servicios</a></li>
+            <li><a href="/formulario-de-contacto">Contacto</a></li>
+            <li><a href="/admin" class="active">Administración</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+<section class="banner">
+    <h1>Dar de Baja Usuario</h1>
+    <p>Busca y elimina un usuario del sistema.</p>
+</section>
+
+<div class="container_menu_lateral">
+<div class="menu-lateral">
+    <h2>Menú de Administración</h2>
+    <ul>
+        <li><a href="/gestion_de_usuario">Crear Usuario</a></li>
+        <li><a href="/Modificar_Usuario">Modificar Usuario</a></li>
+        <li><a href="/dar_baja_usuario" class="active">Dar de baja Usuario</a></li>
+        <li><a href="/correo">Correo Masivo</a></li>
+        <li><a href="/reportes">Ver Reportes</a></li>
+        <li><a href="/biometrico">Biometrico Facial</a></li>
+        <li><a href="/capturar_foto" class="active">Registrar Facial</a></li>
+        <li><a href="/logout">Cerrar Sesión</a></li>
+    </ul>
+</div>
+
+<div class="contenido-principal_gestion_de_usuario">
+<h3>Eliminar Usuario</h3>
+
+<!-- 🔍 BUSCAR -->
+<div class="input-group">
+    <label>Identificación del Usuario</label>
+    <input type="text" id="identificacion" placeholder="Ingrese identificación">
+    <br>
+    <button class="btn-buscar" onclick="buscarUsuario()">Buscar</button>
+</div>
+
+<!-- 📄 DATOS -->
+<div id="datosUsuario" style="display:none; margin-top:20px;">
+    <p><strong>Nombre:</strong> <span id="nombre"></span></p>
+    <p><strong>Apellido:</strong> <span id="apellido"></span></p>
+    <p><strong>Email:</strong> <span id="email"></span></p>
+
+    <div class="input-group">
+        <label>Motivo de la baja</label>
+        <textarea id="motivo" placeholder="Motivo de la baja"></textarea>
+    </div>
+
+    <button class="card-button eliminar" onclick="darDeBaja()">Dar de Baja</button>
+</div>
+
+<!-- ✅ TOAST -->
+<div id="toast" class="toast-success">
+    ✅ Usuario dado de baja correctamente
+</div>
+
+</div>
+</div>
+</main>
+
+<footer>
+    <p>&copy; 2024 Biometric Access. Todos los derechos reservados.</p>
+</footer>
+
+<!-- ✅ JS -->
+<script>
+let identificacionActual = "";
+
+async function buscarUsuario() {
+    const id = document.getElementById("identificacion").value.trim();
+    if (!id) return alert("Ingrese una identificación");
+
+    try {
+        const res = await fetch(`/api/usuarios/${id}`);
+        if (!res.ok) {
+            alert("❌ Usuario no encontrado");
+            return;
+        }
+
+        const usuario = await res.json();
+        identificacionActual = usuario.identificacion;
+
+        document.getElementById("nombre").textContent = usuario.nombre;
+        document.getElementById("apellido").textContent = usuario.apellido;
+        document.getElementById("email").textContent = usuario.email;
+
+        document.getElementById("datosUsuario").style.display = "block";
+
+    } catch (e) {
+        alert("Error al buscar usuario");
+    }
+}
+
+async function darDeBaja() {
+    if (!identificacionActual) return;
+
+    if (!confirm("¿Seguro que deseas eliminar este usuario?")) return;
+
+    try {
+        const res = await fetch(`/api/usuarios/${identificacionActual}`, {
+            method: "DELETE"
+        });
+
+        if (res.ok) {
+            mostrarToast();
+            document.getElementById("datosUsuario").style.display = "none";
+            document.getElementById("identificacion").value = "";
+        } else {
+            alert("❌ No se pudo eliminar el usuario");
+        }
+    } catch (e) {
+        alert("Error al eliminar usuario");
+    }
+}
+
+function mostrarToast() {
+    const toast = document.getElementById("toast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3000);
+}
+</script>
+
+<style>
+.toast-success{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 6px;
+    display: none;
+}
+.toast-success.show{
+    display:block;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,953 @@
+/* BiometricAccess.css */
+
+:root {
+  --primary-color: #1a1a1a;
+  --secondary-color: #ffffff;
+  --accent-color: #808080;
+  --gray-light: #f5f5f7;
+  --gray-medium: #d1d1d6;
+  --text-color: #333;
+  --font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  background-color: var(--gray-light);
+  color: var(--text-color);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--secondary-color);
+  border-bottom: 1px solid var(--gray-medium);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.logo {
+  display: flex;
+  align-items: auto;
+  gap: 1rem;
+}
+
+.logo h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.logo img {
+  height: 60px;
+}
+
+.nav-bar .menu {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.menu li a {
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.menu li a:hover {
+  color: var(--accent-color);
+}
+
+.banner {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/bannerimagen.png') center/cover no-repeat;
+  color: white;
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.banner h1 {
+  font-size: 3em;
+  margin-bottom: 10px;
+}
+
+.banner p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
+.btn-banner {
+  display: inline-block;
+  padding: 12px 25px;
+  background-color: #000;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.btn-banner:hover {
+  background-color: #808088;
+}
+
+.carousel-caption {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  padding: 1rem;
+  color: white;
+}
+
+.carousel-caption a {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background-color: var(--accent-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.carousel-caption a:hover {
+  background-color: #808080;
+}
+
+.Titulo.banner2 {
+  text-align: center;
+  padding: 3rem 2rem 1rem;
+  background-color: #ffffff;
+  border-top: 1px solid var(--gray-medium);
+}
+
+.Titulo.banner2 h1 {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+body2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background-color: var(--gray-light);
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px #000;
+  overflow: hidden;
+  max-width: 900px;
+  width: 100%;
+  border: 1px solid var(--gray-medium);
+}
+
+.image-field {
+  flex: 1;
+  max-width: 300px;
+  overflow: hidden;
+}
+
+.image-field img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.text-field {
+  flex: 2;
+  padding: 1.5rem;
+}
+
+.text-field h1 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #000;
+}
+
+.text-field p {
+  color: #000;
+  margin: 1rem 0;
+}
+
+.text-field a {
+  display: inline-block;
+  background-color: #000;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.text-field a:hover {
+  background-color: #808080;
+}
+
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: var(--secondary-color);
+  border-top: 1px solid var(--gray-medium);
+  font-size: 0.9rem;
+  color: #000;
+}
+
+/* Seccion Sobre nosotros*/
+.sobre_nosotros {
+  background-color: #f9f9f9;
+  padding: 40px 20px;
+  border-radius: 12px;
+  max-width: 1000px;
+  margin: 40px auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+.sobre_nosotros h2 {
+  text-align: center;
+  font-size: 2em;
+  margin-bottom: 20px;
+  color: #000;
+}
+
+.sobre_nosotros p {
+  font-size: 1.1em;
+  text-align: justify;
+  text-indent: 2em;
+  margin-top: 0;
+}
+
+/* Seccion Servicios*/
+.card-servicios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 40px;
+  background-color: #f0f4f8;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+}
+
+.card-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-size: 1.4em;
+  color: #000;
+  margin-bottom: 12px;
+}
+
+.card-description {
+  font-size: 1em;
+  color: #333;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.card-button {
+  background-color: #000;
+  color: #fff;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.card-button:hover {
+  background-color: #808080;
+  transform: scale(1.05); 
+
+}
+
+/*formulario de contacto*/
+.formulario-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px #000;
+  max-width: 1200px;
+  margin: 40px auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-form {
+  flex: 1 1 400px;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #808080;
+}
+
+.contact-form h2 {
+  margin-bottom: 20px;
+  color: #000;
+} 
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #000;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 95%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #000;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #808080;
+}
+
+.btn-secondary {
+  background-color: #ccc;
+  color: #808080;
+}
+
+.btn-secondary:hover {
+  background-color: #999;
+}
+
+.image-container {
+  flex: 1 1 350px;
+  text-align: center;
+}
+
+.form-image {
+  max-width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.confirmation-container {
+  padding: 40px;
+  border-radius: 12px;
+  background-color: #e6f2ff;
+  max-width: 600px;
+  margin: 40px auto;
+  box-shadow: 0 0 10px #808080;
+}
+/* Banner superior */
+.banner_login {
+  background-color: #fff;
+  color: #000;
+  text-align: center;
+  padding: 2rem 1rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.banner_login h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.banner_login p {
+  font-size: 1.2rem;
+}
+
+/* Contenedor principal Login */
+.container_login {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  padding: 2rem;
+  background-color: #f4f6f9;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Sección de imagen login */
+.image-field {
+  flex: 1;
+  min-width: 300px;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.image-field img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+/* Sección de formulario login*/
+.text-field_login {
+  flex: 1;
+  min-width: 300px;
+  max-width: 500px;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.text-field_login h1 {
+  margin-bottom: 1.5rem;
+  color: #000;
+  font-size: 2rem;
+}
+
+.input-group-login {
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group-login label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.input-group-login input {
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.card-button {
+  display: inline-block;
+  text-align: center;
+  background-color: #000;
+  color: white;
+  border-radius: 8px;
+  font-size: 16px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.card-button:hover {
+  background-color: #808080;
+  transform: scale(1.05); 
+}
+
+.register-link_login {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.register-link_login a {
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.register-link_login a:hover {
+  text-decoration: underline;
+}
+
+/* Adaptabilidad */
+@media (max-width: 768px) {
+  .container_login {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .image-field, .text-field_login {
+    max-width: 100%;
+  }
+}
+/* Banner superior Registro */
+.banner_registro {
+  background-color: #fff;
+  color: #000;
+  text-align: center;
+  padding: 2rem 1rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.banner_registro h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.banner_registro p {
+  font-size: 1.2rem;
+}
+
+/* Contenedor Registro*/
+.container_registro {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Formulario Registro*/
+.formulario_registro .input-group {
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.formulario_registro label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.formulario_registro input {
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.btn-registrar {
+  width: 100%;
+  background-color: #000;
+  color: white;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn-registrar:hover {
+  background-color: #808080;
+}
+
+.login-link {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.login-link a {
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+/* Contenedor general */
+.container_menu_lateral {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: flex;
+  background-color: #f5f7fa;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Menú lateral */
+.menu-lateral {
+  background-color: #fff;
+  color: #000;
+  padding: 2rem 1rem;
+  min-width: 20%;
+  max-width: 20%;
+  flex: 1;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.menu-lateral h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #ffffff33;
+  padding-bottom: 0.5rem;
+}
+
+.menu-lateral ul {
+  list-style: none;
+  padding: 1;
+}
+
+.menu-lateral li {
+  margin: 1rem 0;
+}
+
+.menu-lateral a {
+  color: #000;
+  text-decoration: none;
+  display: block;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.menu-lateral a:hover {
+  background-color: #808080;
+}
+
+/* Contenido principal */
+.contenido-principal_gestion_de_usuario {
+  flex: 3;
+  padding: 2rem;
+  background-color: white;
+  margin: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.contenido-principal_gestion_de_usuario h4 {
+  color: #fff;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+/* Formulario */
+.input-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-weight: bold;
+  margin-bottom: 0.4rem;
+  color: #333;
+}
+
+.input-group input,
+.input-group select {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+/* Botón */
+.card-button {
+  background-color: #000;
+  color: white;
+  border: none;
+  padding: 0.9rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.card-button:hover {
+  background-color: #808080;
+  transform: scale(1.05); 
+}
+
+/* Adaptabilidad móvil */
+@media (max-width: 768px) {
+  .container_menu_lateral {
+    flex-direction: column;
+  }
+
+  .menu-lateral {
+    width: 100%;
+    text-align: center;
+  }
+
+  .contenido-principal_gestion_de_usuario {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+/* Boton Buscar Modificar Usuario */
+.buscar-button {
+  background-color: #000; 
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.buscar-button:hover {
+  background-color: #808080; 
+  transform: scale(1.05); 
+}
+
+.buscar-button:active {
+  background-color: #808080;
+  transform: scale(0.98);
+}
+.buscar-button {
+  background-color: #000; 
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.buscar-button:hover {
+  background-color: #808080; 
+  transform: scale(1.05); 
+}
+
+.buscar-button:active {
+  background-color: #808080;
+  transform: scale(0.98);
+}
+
+/* Boton Buscar Id Usuario */
+.btn-buscar {
+  background-color: #000; 
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-buscar:hover {
+  background-color: #808080; 
+  transform: scale(1.05); 
+}
+
+.btn-buscar:active {
+  background-color: #808080;
+  transform: scale(0.98);
+}
+.btn-buscar {
+  background-color: #000; 
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-buscar:hover {
+  background-color: #808080; 
+  transform: scale(1.05); 
+}
+
+.btn-buscar:active {
+  background-color: #808080;
+  transform: scale(0.98);
+}
+
+.btn-buscar {
+  width: 100px;
+  height: 40px;
+}
+form {
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  max-width: 95%;
+}
+
+.input-group label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.input-group textarea {
+  resize: vertical;
+  min-height: 100px;
+  padding: 10px;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-group textarea:focus {
+  border-color: #007BFF;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+/* Estilo para la barra de búsqueda */
+.search-bar {
+  width: 95%;
+  margin: 20px auto 0 auto;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.search-bar input[type="text"] {
+  width: 35%;
+  padding: 10px 14px;
+  border: 1px solid #000;
+  background-color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #000;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-bar input[type="text"]:focus {
+  border-color: #000;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Estilo para la tabla de usuarios */
+.user-table {
+  width: 95%;
+  margin: 30px auto;
+  border-collapse: collapse;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #000;
+  font-family: inherit;
+}
+
+.user-table thead {
+  background-color: #000;
+  color: #fff;
+}
+
+.user-table th,
+.user-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+.user-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.user-table tbody tr:hover {
+  background-color: #eaeaea;
+}
+
+/* Botones de acción */
+.edit-btn,
+.delete-btn {
+  width: 80px;
+  padding: 6px 12px;
+  margin-right: 6px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.edit-btn {
+  background-color: #000;
+  color: #fff;
+}
+
+.edit-btn:hover {
+  background-color: #808080;
+}
+
+.delete-btn {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #000;
+}
+
+.delete-btn:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.container_general {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
