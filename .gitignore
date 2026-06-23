@@ -1,7 +1,7 @@
-<<<<<<< HEAD
 HELP.md
 
-### Maven / Spring Boot ###
+### Java / Spring Boot ###
+*.class
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -11,6 +11,8 @@ target/
 *.log
 logs/
 spring.log
+hs_err_pid*
+replay_pid*
 
 ### Variables sensibles ###
 .env
@@ -20,7 +22,6 @@ application-dev.properties
 
 ### Uploads / Archivos cargados ###
 uploads/
-src/main/resources/static/uploads/
 src/main/resources/uploads/
 
 ### Rostros / imágenes biométricas ###
@@ -28,10 +29,6 @@ usuarios/
 src/main/python/usuarios/
 src/main/python/rostros/
 src/main/python/uploads/
-*.jpg
-*.jpeg
-*.png
-*.webp
 
 ### Python ###
 __pycache__/
@@ -84,29 +81,3 @@ build/
 .DS_Store
 Thumbs.db
 desktop.ini
-=======
-# Compiled class file
-*.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
->>>>>>> 70cb3bd82a2918f02c8a32396a1b9ba351112091
