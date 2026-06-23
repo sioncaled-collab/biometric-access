@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Equipos</title>
+    <link rel="stylesheet" href="/css/estilo_principal.css">
+    <style>
+        .mensaje-box {
+            margin: 15px 0;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .mensaje-ok {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #81c784;
+        }
+
+        .mensaje-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        .tabla-equipos {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .tabla-equipos th,
+        .tabla-equipos td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .tabla-equipos th {
+            background-color: #f4f4f4;
+        }
+
+        .bloque {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-buscar {
+            background: black;
+            color: white;
+        }
+
+        .btn-guardar {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-eliminar {
+            background: #c62828;
+            color: white;
+        }
+
+        .usuario-info p {
+            margin: 6px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <img src="/images/Logo B.png" alt="Logo Biometric Access">
+            <h1>Biometric Access</h1>
+        </div>
+        <nav class="nav-bar">
+            <ul class="menu">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/sobre-nosotros">Sobre Nosotros</a></li>
+                <li><a href="/servicios">Servicios</a></li>
+                <li><a href="/formulario-de-contacto">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main style="padding: 30px;">
+        <section class="banner">
+            <h1>Gestión de Equipos</h1>
+            <p>Consulta, agrega y elimina equipos asociados a un usuario.</p>
+        </section>
+
+        <div class="container_menu_lateral">
+            <div class="menu-lateral">
+                <h2 th:text="${esAprendiz} ? 'Menú de Aprendiz' : 'Menú del Sistema'">Menú del Sistema</h2>
+
+                <ul>
+                    <!-- ADMINISTRADOR -->
+                    <li th:if="${esAdministrador}">
+                        <a href="/gestion_de_usuario">Crear Usuario</a>
+                    </li>
+                    <li th:if="${esAdministrador}">
+                        <a href="/Modificar_Usuario">Modificar Usuario</a>
+                    </li>
+                    <li th:if="${esAdministrador}">
+                        <a href="/dar_baja_usuario">Dar de baja Usuario</a>
+                    </li>
+                    <li th:if="${esAdministrador}">
+                        <a href="/gestion_equipos">Gestionar Equipos</a>
+                    </li>
+                    <li th:if="${esAdministrador}">
+                        <a href="/carga_masiva_usuarios">Carga Masiva Usuarios</a>
+                    </li>
+                    <li th:if="${esAdministrador}">
+                        <a href="/correo">Correo Masivo</a>
+                    </li>
+                    <li th:if="${esAdministrador}">
+                        <a href="/reportes2">Ver Reportes</a>
+                    </li>
+                    <li th:if="${esAdministrador}">
+                        <a href="/capturar_foto">Registro Facial</a>
+                    </li>
+                    <li th:if="${esAdministrador or esGuarda}">
+                        <a href="/biometrico_kiosko">Modulo Biometrico</a>
+                    </li>
+
+                    <!-- COORDINADOR -->
+                    <li th:if="${esCoordinador}">
+                        <a href="/reportes2">Ver Reportes</a>
+                    </li>
+                    <li th:if="${esCoordinador}">
+                        <a href="/gestion_equipos">Gestionar Equipos</a>
+                    </li>
+
+                    <!-- INSTRUCTOR -->
+                    <li th:if="${esInstructor}">
+                        <a href="/reportes2">Ver Reportes</a>
+                    </li>
+
+                    <!-- GUARDA -->
+                    <li th:if="${esGuarda}">
+                        <a href="/biometrico">Biometrico Facial</a>
+                    </li>
+                    <li th:if="${esGuarda}">
+                        <a href="/capturar_foto">Registro Facial</a>
+                    </li>
+                    <li th:if="${esGuarda}">
+                        <a href="/reportes2">Ver Reportes</a>
+                    </li>
+
+                    <!-- APRENDIZ -->
+                    <li th:if="${esAprendiz}">
+                        <a href="/perfil">Mi Perfil</a>
+                    </li>
+                    <li th:if="${esAprendiz}">
+                        <a href="/mis_ingresos">Mis Ingresos</a>
+                    </li>
+
+                    <!-- TODOS -->
+                    <li>
+                        <a href="/logout">Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="contenido-principal_gestion_de_usuario">
+                <div id="mensajeBox" class="mensaje-box"></div>
+
+                <div class="bloque">
+                    <h3>Buscar usuario por identificación</h3>
+                    <div class="input-group">
+                        <label for="identificacionBusqueda">Identificación</label>
+                        <input type="text" id="identificacionBusqueda" placeholder="Ingrese la identificación">
+                    </div>
+                    <div class="acciones">
+                        <button class="btn btn-buscar" onclick="buscarUsuario()">Buscar</button>
+                    </div>
+                </div>
+
+                <div class="bloque" id="usuarioBloque" style="display:none;">
+                    <h3>Datos del usuario</h3>
+                    <div class="usuario-info">
+                        <p><strong>ID interno:</strong> <span id="usuarioId"></span></p>
+                        <p><strong>Nombre:</strong> <span id="usuarioNombre"></span></p>
+                        <p><strong>Identificación:</strong> <span id="usuarioIdentificacion"></span></p>
+                        <p><strong>Correo:</strong> <span id="usuarioEmail"></span></p>
+                        <p><strong>Rol:</strong> <span id="usuarioRol"></span></p>
+                    </div>
+                </div>
+
+                <div class="bloque" id="equiposBloque" style="display:none;">
+                    <h3>Equipos asociados</h3>
+
+                    <table class="tabla-equipos">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre equipo</th>
+                                <th>Tipo</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>MAC</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaEquiposBody">
+                            <tr>
+                                <td colspan="8">No hay equipos asociados.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bloque" id="formEquipoBloque" style="display:none;">
+                    <h3>Agregar equipo</h3>
+                    <form id="formEquipo">
+                        <input type="hidden" id="equipoUsuarioId">
+
+                        <div class="input-group">
+                            <label>Nombre del equipo</label>
+                            <input type="text" id="nombreEquipo" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Tipo de equipo</label>
+                            <select id="tipoEquipo" required>
+                                <option value="LAPTOP">Laptop</option>
+                                <option value="CELULAR">Celular</option>
+                                <option value="TABLET">Tablet</option>
+                                <option value="DESKTOP">Desktop</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Marca</label>
+                            <input type="text" id="marca">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Modelo</label>
+                            <input type="text" id="modelo">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Sistema Operativo</label>
+                            <input type="text" id="sistemaOperativo">
+                        </div>
+
+                        <div class="input-group">
+                            <label>MAC Address</label>
+                            <input type="text" id="macAddress" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>IP Address</label>
+                            <input type="text" id="ipAddress">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Serial</label>
+                            <input type="text" id="serialEquipo">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Observaciones</label>
+                            <textarea id="observaciones"></textarea>
+                        </div>
+
+                        <div class="acciones">
+                            <button type="submit" class="btn btn-guardar">Guardar equipo</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Biometric Access. Todos los derechos reservados.</p>
+    </footer>
+
+
+    <script>
+        let usuarioActual = null;
+
+        function mostrarMensaje(texto, tipo = "ok") {
+            const box = document.getElementById("mensajeBox");
+            box.textContent = texto;
+            box.className = "mensaje-box " + (tipo === "ok" ? "mensaje-ok" : "mensaje-error");
+            box.style.display = "block";
+
+            setTimeout(() => {
+                box.style.display = "none";
+            }, 4000);
+        }
+
+        async function buscarUsuario() {
+            const identificacion = document.getElementById("identificacionBusqueda").value.trim();
+
+            if (!identificacion) {
+                mostrarMensaje("Debe ingresar una identificación.", "error");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/usuarios/${identificacion}`);
+                if (!response.ok) {
+                    mostrarMensaje("Usuario no encontrado.", "error");
+                    ocultarBloques();
+                    return;
+                }
+
+                const usuario = await response.json();
+                usuarioActual = usuario;
+
+                document.getElementById("usuarioId").textContent = usuario.id;
+                document.getElementById("usuarioNombre").textContent = `${usuario.nombre} ${usuario.apellido}`;
+                document.getElementById("usuarioIdentificacion").textContent = usuario.identificacion;
+                document.getElementById("usuarioEmail").textContent = usuario.email;
+                document.getElementById("usuarioRol").textContent = usuario.rol;
+                document.getElementById("equipoUsuarioId").value = usuario.id;
+
+                document.getElementById("usuarioBloque").style.display = "block";
+                document.getElementById("equiposBloque").style.display = "block";
+                document.getElementById("formEquipoBloque").style.display = "block";
+
+                await cargarEquipos(usuario.id);
+
+            } catch (error) {
+                console.error(error);
+                mostrarMensaje("Error al buscar el usuario.", "error");
+            }
+        }
+
+        function ocultarBloques() {
+            document.getElementById("usuarioBloque").style.display = "none";
+            document.getElementById("equiposBloque").style.display = "none";
+            document.getElementById("formEquipoBloque").style.display = "none";
+        }
+
+        async function cargarEquipos(usuarioId) {
+            try {
+                const response = await fetch(`/api/equipos/usuario/${usuarioId}`);
+                const equipos = await response.json();
+
+                const tbody = document.getElementById("tablaEquiposBody");
+                tbody.innerHTML = "";
+
+                if (!equipos || equipos.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8">No hay equipos asociados.</td></tr>`;
+                    return;
+                }
+
+                equipos.forEach(equipo => {
+                    const fila = document.createElement("tr");
+                    fila.innerHTML = `
+                    <td>${equipo.id}</td>
+                    <td>${equipo.nombreEquipo || ''}</td>
+                    <td>${equipo.tipoEquipo || ''}</td>
+                    <td>${equipo.marca || ''}</td>
+                    <td>${equipo.modelo || ''}</td>
+                    <td>${equipo.macAddress || ''}</td>
+                    <td>${equipo.estado || ''}</td>
+                    <td>
+                        <button class="btn btn-eliminar" onclick="eliminarEquipo(${equipo.id})">Eliminar</button>
+                    </td>
+                `;
+                    tbody.appendChild(fila);
+                });
+
+            } catch (error) {
+                console.error(error);
+                mostrarMensaje("Error al cargar los equipos.", "error");
+            }
+        }
+
+        document.getElementById("formEquipo").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const payload = {
+                usuarioId: document.getElementById("equipoUsuarioId").value,
+                nombreEquipo: document.getElementById("nombreEquipo").value.trim(),
+                tipoEquipo: document.getElementById("tipoEquipo").value,
+                marca: document.getElementById("marca").value.trim(),
+                modelo: document.getElementById("modelo").value.trim(),
+                sistemaOperativo: document.getElementById("sistemaOperativo").value.trim(),
+                macAddress: document.getElementById("macAddress").value.trim(),
+                ipAddress: document.getElementById("ipAddress").value.trim(),
+                serialEquipo: document.getElementById("serialEquipo").value.trim(),
+                observaciones: document.getElementById("observaciones").value.trim()
+            };
+
+            try {
+                const response = await fetch("/api/equipos", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const mensaje = await response.text();
+
+                if (response.ok) {
+                    mostrarMensaje(mensaje, "ok");
+                    document.getElementById("formEquipo").reset();
+                    document.getElementById("equipoUsuarioId").value = usuarioActual.id;
+                    await cargarEquipos(usuarioActual.id);
+                } else {
+                    mostrarMensaje(mensaje, "error");
+                }
+
+            } catch (error) {
+                console.error(error);
+                mostrarMensaje("Error al guardar el equipo.", "error");
+            }
+        });
+
+        async function eliminarEquipo(id) {
+            if (!confirm("¿Deseas eliminar este equipo?")) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/equipos/${id}`, {
+                    method: "DELETE"
+                });
+
+                const mensaje = await response.text();
+
+                if (response.ok) {
+                    mostrarMensaje(mensaje, "ok");
+                    await cargarEquipos(usuarioActual.id);
+                } else {
+                    mostrarMensaje(mensaje, "error");
+                }
+
+            } catch (error) {
+                console.error(error);
+                mostrarMensaje("Error al eliminar el equipo.", "error");
+            }
+        }
+    </script>
+
+</body>
+
+</html>

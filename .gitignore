@@ -1,0 +1,85 @@
+HELP.md
+
+### Maven / Spring Boot ###
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### Logs ###
+*.log
+logs/
+spring.log
+
+### Variables sensibles ###
+.env
+.env.*
+application-local.properties
+application-dev.properties
+
+### Uploads / Archivos cargados ###
+uploads/
+src/main/resources/static/uploads/
+src/main/resources/uploads/
+
+### Rostros / imágenes biométricas ###
+usuarios/
+src/main/python/usuarios/
+src/main/python/rostros/
+src/main/python/uploads/
+*.jpg
+*.jpeg
+*.png
+*.webp
+
+### Python ###
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+.venv/
+pip-wheel-metadata/
+*.egg-info/
+.pytest_cache/
+
+### Base de datos local / respaldos ###
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Sistema operativo ###
+.DS_Store
+Thumbs.db
+desktop.ini

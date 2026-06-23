@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil Aprendiz</title>
+    <link rel="stylesheet" href="/css/estilo_principal.css">
+
+    <style>
+        .container_menu_lateral {
+            display: flex !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            gap: 20px !important;
+            width: 100% !important;
+            max-width: 1400px !important;
+            margin: 30px auto !important;
+            padding: 0 20px !important;
+            box-sizing: border-box !important;
+            flex-wrap: nowrap !important;
+        }
+
+        .menu-lateral {
+            width: 260px !important;
+            min-width: 260px !important;
+            max-width: 260px !important;
+            flex: 0 0 260px !important;
+            background: #ffffff !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+            padding: 20px !important;
+            box-sizing: border-box !important;
+        }
+
+        .menu-lateral h2 {
+            margin-top: 0 !important;
+            margin-bottom: 15px !important;
+            font-size: 22px !important;
+            color: black !important;
+        }
+
+        .menu-lateral ul {
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .menu-lateral ul li {
+            margin-bottom: 10px !important;
+        }
+
+        .menu-lateral ul li a {
+            display: block !important;
+            text-decoration: none !important;
+            color: #333 !important;
+            background: #f5f7fa !important;
+            padding: 12px 14px !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+            font-weight: 500 !important;
+        }
+
+        .menu-lateral ul li a:hover {
+            background: black !important;
+            color: #fff !important;
+        }
+
+        .contenido-principal-perfil {
+            flex: 1 !important;
+            min-width: 0 !important;
+            width: calc(100% - 280px) !important;
+            background: #ffffff !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+            padding: 30px !important;
+            box-sizing: border-box !important;
+            overflow-x: hidden !important;
+        }
+
+        .perfil-header {
+            display: flex !important;
+            align-items: center !important;
+            gap: 24px !important;
+            flex-wrap: wrap !important;
+            margin-bottom: 30px !important;
+            padding-bottom: 20px !important;
+            border-bottom: 1px solid #e5e5e5 !important;
+        }
+
+        .foto-aprendiz {
+            width: 180px !important;
+            height: 180px !important;
+            object-fit: cover !important;
+            border-radius: 12px !important;
+            border: 3px solid black !important;
+            background: #f2f2f2 !important;
+            display: block !important;
+        }
+
+        .datos-aprendiz {
+            flex: 1 !important;
+            min-width: 260px !important;
+        }
+
+        .datos-aprendiz h3 {
+            margin: 0 0 15px 0 !important;
+            color: black !important;
+            font-size: 24px !important;
+        }
+
+        .datos-aprendiz p {
+            margin: 8px 0 !important;
+            font-size: 15px !important;
+            color: #333 !important;
+        }
+
+        .bloque-info {
+            margin-top: 30px !important;
+        }
+
+        .bloque-info h3 {
+            margin: 0 0 15px 0 !important;
+            color: black !important;
+            font-size: 22px !important;
+            border-left: 5px solid black !important;
+            padding-left: 10px !important;
+        }
+
+        .tabla-contenedor {
+            width: 100% !important;
+            overflow-x: auto !important;
+        }
+
+        .tabla-perfil {
+            width: 100% !important;
+            min-width: 700px !important;
+            border-collapse: collapse !important;
+        }
+
+        .tabla-perfil th,
+        .tabla-perfil td {
+            border: 1px solid #dcdcdc !important;
+            padding: 12px !important;
+            text-align: left !important;
+            font-size: 14px !important;
+            white-space: nowrap !important;
+        }
+
+        .tabla-perfil th {
+            background: black !important;
+            color: #ffffff !important;
+        }
+
+        .tabla-perfil tr:nth-child(even) {
+            background: #f9f9f9 !important;
+        }
+
+        .estado-activo {
+            color: #198754 !important;
+            font-weight: bold !important;
+        }
+
+        .estado-inactivo {
+            color: #dc3545 !important;
+            font-weight: bold !important;
+        }
+
+        @media (max-width: 992px) {
+            .container_menu_lateral {
+                flex-direction: column !important;
+            }
+
+            .menu-lateral {
+                width: 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
+                flex: 1 1 100% !important;
+            }
+
+            .contenido-principal-perfil {
+                width: 100% !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .perfil-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+
+            .foto-aprendiz {
+                width: 150px !important;
+                height: 150px !important;
+            }
+
+            .contenido-principal-perfil {
+                padding: 20px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <img src="/images/Logo B.png" alt="Logo Biometric Access">
+            <h1>Biometric Access</h1>
+        </div>
+
+        <nav class="nav-bar">
+            <ul class="menu">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/sobre-nosotros">Sobre Nosotros</a></li>
+                <li><a href="/servicios">Servicios</a></li>
+                <li><a href="/formulario-de-contacto">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="banner">
+            <h1>Perfil del Aprendiz</h1>
+            <p>Consulta tu información, historial de acceso y dispositivos asociados.</p>
+        </section>
+
+        <div class="container_menu_lateral">
+
+            <aside class="menu-lateral">
+                <h2>Menú Aprendiz</h2>
+                <ul>
+                    <li><a href="/perfil">Mi perfil</a></li>
+                    <li><a href="/logout">Cerrar Sesión</a></li>
+                </ul>
+            </aside>
+
+            <section class="contenido-principal-perfil">
+
+                <div class="perfil-header">
+                    <img th:if="${usuario != null and usuario.identificacion != null}"
+                        th:src="@{'/usuarios/' + ${usuario.identificacion} + '.jpg'}" alt="Foto del aprendiz"
+                        class="foto-aprendiz" onerror="this.onerror=null;this.src='/images/default-user.png';">
+
+                    <img th:if="${usuario == null or usuario.identificacion == null}" src="/images/default-user.png"
+                        alt="Foto por defecto" class="foto-aprendiz">
+
+                    <div class="datos-aprendiz">
+                        <h3>Información del aprendiz</h3>
+                        <p><strong>Nombre:</strong> <span th:text="${usuario.nombre}">Nombre</span></p>
+                        <p><strong>Apellido:</strong> <span th:text="${usuario.apellido}">Apellido</span></p>
+                        <p><strong>Identificación:</strong> <span th:text="${usuario.identificacion}">123456789</span>
+                        </p>
+                        <p><strong>Correo:</strong> <span th:text="${usuario.email}">correo@ejemplo.com</span></p>
+                        <p><strong>Teléfono:</strong> <span th:text="${usuario.telefono}">3000000000</span></p>
+                        <p><strong>Rol:</strong> <span th:text="${usuario.rol}">APRENDIZ</span></p>
+                    </div>
+                </div>
+
+                <div class="bloque-info">
+                    <h3>Registros de acceso</h3>
+                    <div class="tabla-contenedor">
+                        <table class="tabla-perfil">
+                            <thead>
+                                <tr>
+                                    <th>Fecha y hora</th>
+                                    <th>ID Equipo</th>
+                                    <th>Resultado</th>
+                                    <th>Observación</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${registrosAcceso == null or #lists.isEmpty(registrosAcceso)}">
+                                    <td colspan="4">No hay registros de acceso para este aprendiz.</td>
+                                </tr>
+
+
+                                <tr th:each="acceso : ${registrosAcceso}">
+                                    <td th:text="${acceso.fechaHora}">2026-03-23T21:04:20</td>
+                                    <td th:text="${acceso.equipoId}">1</td>
+                                    <td th:text="${acceso.resultado}">APROBADO</td>
+                                    <td th:text="${acceso.observacion}">Ingreso biométrico aprobado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bloque-info">
+                    <h3>Dispositivos asociados</h3>
+                    <div class="tabla-contenedor">
+                        <table class="tabla-perfil">
+                            <thead>
+                                <tr>
+                                    <th>Nombre del dispositivo</th>
+                                    <th>Tipo</th>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${dispositivosAsociados == null or #lists.isEmpty(dispositivosAsociados)}">
+                                    <td colspan="5">No hay dispositivos asociados.</td>
+                                </tr>
+                                <tr th:each="equipo : ${dispositivosAsociados}">
+                                    <td th:text="${equipo.nombreEquipo}">Equipo principal</td>
+                                    <td th:text="${equipo.tipoEquipo}">LAPTOP</td>
+                                    <td th:text="${equipo.marca}">Lenovo</td>
+                                    <td th:text="${equipo.modelo}">ThinkPad</td>
+                                    <td th:text="${equipo.estado}">ACTIVO</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Biometric Access. Todos los derechos reservados.</p>
+    </footer>
+
+</body>
+
+</html>

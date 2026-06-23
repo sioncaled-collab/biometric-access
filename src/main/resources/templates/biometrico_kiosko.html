@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Acceso Biométrico</title>
+    <link rel="stylesheet" href="/css/estilo_principal.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: #f4f6f8;
+            font-family: Arial, sans-serif;
+        }
+
+        .pantalla-acceso {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .titulo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .titulo h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .titulo p {
+            margin-top: 10px;
+            color: #555;
+        }
+
+        .biometrico-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .camera-container {
+            position: relative;
+            width: 450px;
+            max-width: 100%;
+        }
+
+        #video {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            border: 2px solid black;
+        }
+
+        .holo-frame {
+            position: absolute;
+            top: 10%;
+            left: 30%;
+            width: 180px;
+            height: 250px;
+            border: 3px solid #00ffc8;
+            border-radius: 10px;
+            box-shadow: 0 0 20px #00ffc8;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #00ffc8;
+            animation: scan 3s infinite linear;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        .btn-validar {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: black;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .resultado {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .info-usuario {
+            margin-top: 20px;
+            background: #fff;
+            border-radius: 10px;
+            padding: 18px 22px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .info-usuario p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        .info-usuario strong {
+            color: #111;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="pantalla-acceso">
+        <div class="titulo">
+            <h1>Control de Acceso Biométrico</h1>
+            <p>Validación exclusiva de ingreso</p>
+        </div>
+
+        <div class="biometrico-container">
+
+            <div class="camera-container">
+                <video id="video" autoplay></video>
+                <div class="holo-frame"></div>
+                <div class="scan-line"></div>
+            </div>
+
+            <button class="btn-validar" onclick="validar()">Validar Acceso</button>
+
+            <p id="resultado" class="resultado"></p>
+
+            <div id="infoUsuario" class="info-usuario" style="display:none;">
+                <p><strong>Nombre:</strong> <span id="datoNombre"></span></p>
+                <p><strong>Identificación:</strong> <span id="datoIdentificacion"></span></p>
+                <p><strong>Rol:</strong> <span id="datoRol"></span></p>
+                <p><strong>Teléfono:</strong> <span id="datoTelefono"></span></p>
+                <p><strong>Número de ficha:</strong> <span id="datoFicha"></span></p>
+            </div>
+
+            <div id="bloqueEquipos" class="info-usuario" style="display:none;">
+                <p><strong>Equipo de ingreso:</strong></p>
+                <select id="equipoSeleccionado">
+                    <option value="">Seleccione un equipo</option>
+                </select>
+
+                <button class="btn-validar" onclick="confirmarIngreso()" style="margin-top:15px;">
+                    Confirmar Ingreso
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+    const API_BIOMETRICO = "http://127.0.0.1:8000";
+    const API_SISTEMA = "http://127.0.0.1:8080";
+
+    const video = document.getElementById("video");
+    const resultado = document.getElementById("resultado");
+    const infoUsuario = document.getElementById("infoUsuario");
+    const bloqueEquipos = document.getElementById("bloqueEquipos");
+
+    window.usuarioValidado = null;
+
+    function mostrarMensaje(texto, color = "black") {
+        resultado.style.display = "block";
+        resultado.style.color = color;
+        resultado.textContent = texto;
+    }
+
+    function ocultarDatosUsuario() {
+        infoUsuario.style.display = "none";
+        bloqueEquipos.style.display = "none";
+
+        document.getElementById("datoNombre").textContent = "";
+        document.getElementById("datoIdentificacion").textContent = "";
+        document.getElementById("datoRol").textContent = "";
+        document.getElementById("datoTelefono").textContent = "";
+        document.getElementById("datoFicha").textContent = "";
+
+        const select = document.getElementById("equipoSeleccionado");
+        if (select) {
+            select.innerHTML = '<option value="">Seleccione un equipo</option>';
+        }
+    }
+
+    function mostrarDatosUsuario(data) {
+        document.getElementById("datoNombre").textContent = data.persona || "N/A";
+        document.getElementById("datoIdentificacion").textContent = data.identificacion || "N/A";
+        document.getElementById("datoRol").textContent = data.rol || "N/A";
+        document.getElementById("datoTelefono").textContent = data.telefono || "No registrado";
+        document.getElementById("datoFicha").textContent = data.numero_ficha || "No aplica";
+
+        infoUsuario.style.display = "block";
+    }
+
+    function mostrarRespuestaDenegada(data) {
+        let mensaje = data.mensaje || "Acceso denegado";
+
+        if (data.distancia_minima !== undefined && data.distancia_minima !== null) {
+            mensaje += ` | Distancia mínima: ${data.distancia_minima}`;
+        }
+
+        if (data.segunda_distancia !== undefined && data.segunda_distancia !== null) {
+            mensaje += ` | Segunda distancia: ${data.segunda_distancia}`;
+        }
+
+        if (data.diferencia_seguridad !== undefined && data.diferencia_seguridad !== null) {
+            mensaje += ` | Diferencia seguridad: ${data.diferencia_seguridad}`;
+        }
+
+        if (data.umbral !== undefined && data.umbral !== null) {
+            mensaje += ` | Umbral: ${data.umbral}`;
+        }
+
+        if (data.margen_seguridad !== undefined && data.margen_seguridad !== null) {
+            mensaje += ` | Margen: ${data.margen_seguridad}`;
+        }
+
+        mostrarMensaje(`✖ ${mensaje}`, "red");
+    }
+
+    function activarBotonValidar(estado) {
+        const boton = document.querySelector(".btn-validar");
+
+        if (!boton) {
+            return;
+        }
+
+        boton.disabled = !estado;
+        boton.textContent = estado ? "Validar Acceso" : "Validando...";
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+
+            video.onloadedmetadata = () => {
+                video.play();
+                mostrarMensaje("Cámara lista. Puedes validar el acceso.", "black");
+            };
+        })
+        .catch(error => {
+            console.error("Error cámara:", error);
+            mostrarMensaje("No fue posible acceder a la cámara", "red");
+        });
+
+    async function validar() {
+        ocultarDatosUsuario();
+        window.usuarioValidado = null;
+
+        if (!video.videoWidth || !video.videoHeight) {
+            mostrarMensaje("La cámara aún no está lista. Espera unos segundos e intenta nuevamente.", "orange");
+            return;
+        }
+
+        mostrarMensaje("Validando rostro...", "black");
+        activarBotonValidar(false);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const imgBase64 = canvas.toDataURL("image/jpeg", 0.90);
+
+        const controller = new AbortController();
+
+        const timeout = setTimeout(() => {
+            controller.abort();
+        }, 45000);
+
+        try {
+            console.log("Enviando imagen al backend biométrico...");
+
+            const response = await fetch(`${API_BIOMETRICO}/validar`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    imagen: imgBase64
+                }),
+                signal: controller.signal
+            });
+
+            clearTimeout(timeout);
+
+            console.log("HTTP status biométrico:", response.status);
+
+            const textoRespuesta = await response.text();
+
+            console.log("Respuesta cruda del backend biométrico:", textoRespuesta);
+
+            if (!textoRespuesta) {
+                mostrarMensaje(`El servidor biométrico respondió ${response.status}, pero no envió contenido.`, "red");
+                return;
+            }
+
+            let data;
+
+            try {
+                data = JSON.parse(textoRespuesta);
+            } catch (errorJson) {
+                console.error("La respuesta biométrica no es JSON válido:", errorJson);
+                mostrarMensaje("El servidor biométrico respondió, pero la respuesta no es JSON válido.", "red");
+                return;
+            }
+
+            console.log("JSON biométrico procesado:", data);
+
+            if (!response.ok) {
+                mostrarMensaje(`Error HTTP ${response.status}: ${data.mensaje || "Error del servidor biométrico"}`, "red");
+                return;
+            }
+
+            if (!data.resultado) {
+                mostrarMensaje("El backend biométrico respondió 200, pero no llegó el campo 'resultado'.", "orange");
+                console.log("JSON sin campo resultado:", data);
+                return;
+            }
+
+            const resultadoBackend = String(data.resultado).toLowerCase().trim();
+
+            if (resultadoBackend === "acceso") {
+                mostrarMensaje("✔ Rostro validado correctamente. Consultando equipos...", "green");
+
+                mostrarDatosUsuario(data);
+                window.usuarioValidado = data;
+
+                try {
+                    await cargarEquiposUsuario(data.identificacion);
+                    mostrarMensaje("✔ Rostro validado. Selecciona el equipo para registrar el ingreso.", "green");
+                } catch (errorEquipos) {
+                    console.error("Error cargando equipos:", errorEquipos);
+                    mostrarMensaje(`✔ Rostro validado, pero no se pudieron cargar los equipos: ${errorEquipos.message}`, "orange");
+                    bloqueEquipos.style.display = "none";
+                }
+
+                return;
+            }
+
+            if (
+                resultadoBackend === "denegado" ||
+                resultadoBackend === "error" ||
+                resultadoBackend === "rechazado"
+            ) {
+                mostrarRespuestaDenegada(data);
+                return;
+            }
+
+            mostrarMensaje(`Respuesta recibida, pero resultado no reconocido: ${data.resultado}`, "orange");
+            console.log("Respuesta completa no reconocida:", data);
+
+        } catch (error) {
+            clearTimeout(timeout);
+
+            console.error("Error validando rostro:", error);
+
+            if (error.name === "AbortError") {
+                mostrarMensaje("Tiempo agotado. El backend tardó demasiado en responder la validación facial.", "red");
+            } else {
+                mostrarMensaje(`Error conectando con servidor biométrico: ${error.message}`, "red");
+            }
+
+        } finally {
+            activarBotonValidar(true);
+        }
+    }
+
+    async function cargarEquiposUsuario(identificacion) {
+        if (!identificacion) {
+            throw new Error("No llegó identificación del usuario validado");
+        }
+
+        const url = `${API_SISTEMA}/api/equipos/usuario-identificacion/${identificacion}`;
+
+        console.log("Consultando equipos en Spring Boot:", url);
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        console.log("HTTP equipos Spring:", response.status);
+
+        const textoRespuesta = await response.text();
+
+        console.log("Respuesta equipos Spring cruda:", textoRespuesta);
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}. Respuesta: ${textoRespuesta}`);
+        }
+
+        if (!textoRespuesta) {
+            throw new Error("Spring respondió vacío al consultar equipos");
+        }
+
+        let equipos;
+
+        try {
+            equipos = JSON.parse(textoRespuesta);
+        } catch (errorJson) {
+            throw new Error("La respuesta de equipos no es JSON válido");
+        }
+
+        if (!Array.isArray(equipos)) {
+            throw new Error("La respuesta de equipos no es una lista");
+        }
+
+        const select = document.getElementById("equipoSeleccionado");
+        select.innerHTML = '<option value="">Seleccione un equipo</option>';
+
+        if (equipos.length === 0) {
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "No hay equipos asociados";
+            select.appendChild(option);
+
+            bloqueEquipos.style.display = "block";
+            return;
+        }
+
+        equipos.forEach(equipo => {
+            const option = document.createElement("option");
+
+            option.value = equipo.id || equipo.equipo_id || equipo.id_equipo;
+
+            option.textContent = `${
+                equipo.nombreEquipo ||
+                equipo.nombre_equipo ||
+                equipo.nombre ||
+                equipo.marca ||
+                "Equipo"
+            } - ${
+                equipo.tipoEquipo ||
+                equipo.tipo_equipo ||
+                equipo.tipo ||
+                equipo.serial ||
+                "Sin tipo"
+            }`;
+
+            select.appendChild(option);
+        });
+
+        bloqueEquipos.style.display = "block";
+    }
+
+    async function confirmarIngreso() {
+        const equipoId = document.getElementById("equipoSeleccionado").value;
+
+        if (!window.usuarioValidado) {
+            alert("Primero debes validar el rostro");
+            return;
+        }
+
+        if (!equipoId) {
+            alert("Debes seleccionar un equipo");
+            return;
+        }
+
+        const payload = {
+            identificacion: window.usuarioValidado.identificacion,
+            equipoId: Number(equipoId)
+        };
+
+        try {
+            const response = await fetch(`${API_SISTEMA}/api/accesos/registrar`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            console.log("HTTP registrar ingreso Spring:", response.status);
+
+            const textoRespuesta = await response.text();
+
+            console.log("Respuesta registrar ingreso Spring:", textoRespuesta);
+
+            if (!textoRespuesta) {
+                mostrarMensaje(`Spring respondió ${response.status}, pero no envió contenido.`, "red");
+                return;
+            }
+
+            let registro;
+
+            try {
+                registro = JSON.parse(textoRespuesta);
+            } catch (errorJson) {
+                mostrarMensaje("La respuesta de registro no es JSON válido.", "red");
+                return;
+            }
+
+            if (!response.ok) {
+                mostrarMensaje(`Error registrando ingreso: ${registro.mensaje || response.status}`, "red");
+                return;
+            }
+
+            if (registro.ok) {
+                mostrarMensaje(`✔ Ingreso registrado correctamente con el equipo: ${registro.equipo || equipoId}`, "green");
+
+                setTimeout(() => {
+                    limpiarPantallaAcceso();
+                }, 2500);
+
+            } else {
+                mostrarMensaje(`✖ No fue posible registrar el ingreso: ${registro.mensaje || "Error desconocido"}`, "red");
+            }
+
+        } catch (error) {
+            console.error("Error registrando ingreso:", error);
+            mostrarMensaje(`Error registrando ingreso: ${error.message}`, "red");
+        }
+    }
+
+    function limpiarPantallaAcceso() {
+        resultado.textContent = "";
+        resultado.style.color = "";
+
+        ocultarDatosUsuario();
+
+        const select = document.getElementById("equipoSeleccionado");
+        if (select) {
+            select.innerHTML = '<option value="">Seleccione un equipo</option>';
+        }
+
+        window.usuarioValidado = null;
+
+        mostrarMensaje("Cámara lista. Puedes validar el acceso.", "black");
+    }
+</script>
+
+</body>
+
+</html>

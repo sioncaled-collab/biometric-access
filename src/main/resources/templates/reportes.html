@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Reportes | Biometric Access</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/estilo_principal.css">
+    <style>
+
+        .menu-lateral{
+            padding: 2rem 3rem !important;
+        }
+
+        .container_menu_lateral{
+            max-width: max-content !important;
+
+        }
+        .card-button {
+            width: 250px !important;
+            height: 40px !important;
+            background-color: black !important;
+            padding: 0.5 rem 0.5 rem !important;
+        }
+
+        .search-bar reportes-actions {
+            width: 300px !important;
+            height: 45px !important;
+
+        }
+
+        .pagina-reportes-fix,
+        .pagina-reportes-fix * {
+            box-sizing: border-box !important;
+        }
+
+        .pagina-reportes-fix {
+            width: 100% !important;
+            overflow-x: hidden !important;
+        }
+
+        .pagina-reportes-fix .container_general.reportes-layout {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: flex-start !important;
+            justify-content: space-between !important;
+            gap: 20px !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 20px !important;
+            margin: 0 !important;
+        }
+
+        .pagina-reportes-fix .container_menu_lateral {
+            flex: 0 0 280px !important;
+            width: 280px !important;
+            min-width: 280px !important;
+            max-width: 280px !important;
+            display: block !important;
+        }
+
+        .pagina-reportes-fix .menu-lateral {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            display: block !important;
+            background: #fff !important;
+            padding: 20px !important;
+            border-radius: 12px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        .pagina-reportes-fix .menu-lateral ul {
+            list-style: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .pagina-reportes-fix .menu-lateral li {
+            display: block !important;
+            width: 100% !important;
+            margin-bottom: 10px !important;
+        }
+
+        .pagina-reportes-fix .menu-lateral a {
+            display: block !important;
+            width: 100% !important;
+            padding: 10px 12px !important;
+            text-decoration: none !important;
+            border-radius: 8px !important;
+        }
+
+        .pagina-reportes-fix .container_menu_derecho.reportes-content {
+            flex: 1 1 auto !important;
+            width: calc(100% - 300px) !important;
+            min-width: 0 !important;
+            max-width: calc(100% - 300px) !important;
+            display: block !important;
+            overflow: hidden !important;
+            background: #fff !important;
+            padding: 20px !important;
+            border-radius: 12px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        .pagina-reportes-fix .reportes-actions,
+        .pagina-reportes-fix .reportes-export {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            gap: 10px !important;
+            width: 100% !important;
+            margin-bottom: 16px !important;
+        }
+
+        .pagina-reportes-fix .reportes-actions input {
+            flex: 1 1 220px !important;
+            min-width: 220px !important;
+            max-width: 320px !important;
+            width: auto !important;
+        }
+
+        .pagina-reportes-fix .card-button,
+        .pagina-reportes-fix button {
+            display: inline-block !important;
+            width: auto !important;
+            white-space: nowrap !important;
+        }
+
+        .pagina-reportes-fix .tabla-responsive {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            display: block !important;
+        }
+
+        .pagina-reportes-fix .user-table {
+            width: 100% !important;
+            min-width: 900px !important;
+            max-width: none !important;
+            margin: 0 !important;
+            border-collapse: collapse !important;
+            table-layout: fixed !important;
+        }
+
+        .pagina-reportes-fix .user-table th,
+        .pagina-reportes-fix .user-table td {
+            padding: 10px !important;
+            vertical-align: middle !important;
+            text-align: left !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        .pagina-reportes-fix .user-table th:nth-child(1),
+        .pagina-reportes-fix .user-table td:nth-child(1) {
+            width: 110px !important;
+        }
+
+        .pagina-reportes-fix .user-table th:nth-child(2),
+        .pagina-reportes-fix .user-table td:nth-child(2) {
+            width: 130px !important;
+        }
+
+        .pagina-reportes-fix .user-table th:nth-child(3),
+        .pagina-reportes-fix .user-table td:nth-child(3) {
+            width: 110px !important;
+        }
+
+        .pagina-reportes-fix .user-table th:nth-child(4),
+        .pagina-reportes-fix .user-table td:nth-child(4) {
+            width: 140px !important;
+        }
+
+        .pagina-reportes-fix .user-table th:nth-child(5),
+        .pagina-reportes-fix .user-table td:nth-child(5) {
+            width: 140px !important;
+        }
+
+        .pagina-reportes-fix .user-table th:nth-child(6),
+        .pagina-reportes-fix .user-table td:nth-child(6) {
+            width: 140px !important;
+        }
+
+        .pagina-reportes-fix .user-table th:nth-child(7),
+        .pagina-reportes-fix .user-table td:nth-child(7) {
+            width: 220px !important;
+        }
+
+        .pagina-reportes-fix .user-table th:nth-child(8),
+        .pagina-reportes-fix .user-table td:nth-child(8) {
+            width: 130px !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <img src="/images/Logo B.png" alt="Logo Biometric Access">
+            <h1>Reportes</h1>
+        </div>
+        <nav class="nav-bar">
+            <ul class="menu">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/sobre-nosotros">Sobre Nosotros</a></li>
+                <li><a href="/servicios">Servicios</a></li>
+                <li><a href="/formulario-de-contacto">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="banner">
+            <h1>Lista de Usuarios</h1>
+            <p>Visualización y exportación segura</p>
+        </section>
+
+        <div class="container_general reportes-layout">
+
+            <aside class="container_menu_lateral">
+                <div class="menu-lateral">
+                    <h2 th:text="${esAprendiz} ? 'Menú de Aprendiz' : 'Menú del Sistema'">Menú del Sistema</h2>
+
+                    <ul>
+                        <li th:if="${esAdministrador}">
+                            <a href="/gestion_de_usuario">Crear Usuario</a>
+                        </li>
+                        <li th:if="${esAdministrador}">
+                            <a href="/Modificar_Usuario">Modificar Usuario</a>
+                        </li>
+                        <li th:if="${esAdministrador}">
+                            <a href="/dar_baja_usuario">Dar de baja Usuario</a>
+                        </li>
+                        <li th:if="${esAdministrador}">
+                            <a href="/gestion_equipos">Gestionar Equipos</a>
+                        </li>
+                        <li th:if="${esAdministrador}">
+                            <a href="/carga_masiva_usuarios">Carga Masiva Usuarios</a>
+                        </li>
+                        <li th:if="${esAdministrador}">
+                            <a href="/correo">Correo Masivo</a>
+                        </li>
+                        <li th:if="${esAdministrador}">
+                            <a href="/reportes2">Ver Reportes</a>
+                        </li>
+                        <li th:if="${esAdministrador}">
+                            <a href="/capturar_foto">Registro Facial</a>
+                        </li>
+                        <li th:if="${esAdministrador or esGuarda}">
+                            <a href="/biometrico_kiosko">Modulo Biometrico</a>
+                        </li>
+
+                        <li th:if="${esCoordinador}">
+                            <a href="/reportes2">Ver Reportes</a>
+                        </li>
+                        <li th:if="${esCoordinador}">
+                            <a href="/gestion_equipos">Gestionar Equipos</a>
+                        </li>
+
+                        <li th:if="${esInstructor}">
+                            <a href="/reportes2">Ver Reportes</a>
+                        </li>
+
+                        <li th:if="${esGuarda}">
+                            <a href="/biometrico">Biometrico Facial</a>
+                        </li>
+                        <li th:if="${esGuarda}">
+                            <a href="/capturar_foto">Registro Facial</a>
+                        </li>
+                        <li th:if="${esGuarda}">
+                            <a href="/reportes2">Ver Reportes</a>
+                        </li>
+
+                        <li th:if="${esAprendiz}">
+                            <a href="/perfil">Mi Perfil</a>
+                        </li>
+                        <li th:if="${esAprendiz}">
+                            <a href="/mis_ingresos">Mis Ingresos</a>
+                        </li>
+
+                        <li>
+                            <a href="/logout">Cerrar Sesión</a>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+
+            <section class="container_menu_derecho reportes-content">
+
+                <div class="search-bar reportes-actions">
+                    <input type="text" id="searchInput" placeholder="Buscar por número de ficha">
+                    <button type="button" onclick="buscarPorFicha()" class="card-button">🔎 Buscar</button>
+                    <button type="button" onclick="cargarUsuarios()" class="card-button">📋 Ver todos</button>
+
+                    <button onclick="exportarCSV()" class="card-button">📊 Excel</button>
+                    <button onclick="exportarXML()" class="card-button">📄 XML</button>
+                    <button onclick="exportarPDF()" class="card-button">🖨 PDF</button>
+
+
+                    <div id="estado" class="estado-box" style="display:none;"></div>
+
+
+                    <div class="tabla-responsive">
+                        <table class="user-table" id="tabla">
+                            <thead>
+                                <tr>
+                                    <th>Número Ficha</th>
+                                    <th>Tipo Documento</th>
+                                    <th>Rol</th>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tablaUsuarios">
+                                <tr>
+                                    <td colspan="8" style="text-align:center;">Cargando usuarios.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Biometric Access</p>
+    </footer>
+
+    <script>
+        function mostrarEstado(msg, tipo = "info") {
+            const e = document.getElementById("estado");
+            e.style.display = "block";
+            e.textContent = msg;
+            e.style.background = tipo === "error" ? "#ffe5e5" : tipo === "ok" ? "#e6ffea" : "#f1f1f1";
+        }
+
+        function pintarUsuarios(usuarios) {
+            const tbody = document.getElementById("tablaUsuarios");
+            tbody.innerHTML = "";
+
+            if (!Array.isArray(usuarios) || usuarios.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Sin datos</td></tr>`;
+                return;
+            }
+
+            usuarios.forEach(u => {
+                tbody.innerHTML += `
+                <tr>
+                    <td>${u.numeroFicha || "-"}</td>
+                    <td>${u.tipoDocumento || "-"}</td>
+                    <td>${u.rol || "-"}</td>
+                    <td>${u.identificacion || "-"}</td>
+                    <td>${u.nombre || "-"}</td>
+                    <td>${u.apellido || "-"}</td>
+                    <td>${u.email || "-"}</td>
+                    <td>${u.telefono || "-"}</td>
+                </tr>`;
+            });
+        }
+
+        async function cargarUsuarios() {
+            const tbody = document.getElementById("tablaUsuarios");
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Cargando usuarios...</td></tr>`;
+
+            try {
+                const r = await fetch("/api/usuarios");
+                if (!r.ok) throw new Error("API no disponible");
+
+                const usuarios = await r.json();
+                pintarUsuarios(usuarios);
+
+                if (!usuarios || usuarios.length === 0) {
+                    mostrarEstado("ℹ No hay usuarios", "info");
+                    return;
+                }
+
+                mostrarEstado(`✅ ${usuarios.length} usuarios cargados`, "ok");
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Error backend</td></tr>`;
+                mostrarEstado("❌ No se pudo conectar con el backend", "error");
+                console.error(error);
+            }
+        }
+
+        async function buscarPorFicha() {
+            const numeroFicha = document.getElementById("searchInput").value.trim();
+            const tbody = document.getElementById("tablaUsuarios");
+
+            if (!numeroFicha) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Ingrese un número de ficha</td></tr>`;
+                mostrarEstado("⚠ Debes ingresar un número de ficha", "error");
+                return;
+            }
+
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Buscando ficha...</td></tr>`;
+
+            try {
+                const r = await fetch(`/api/usuarios/ficha/${numeroFicha}`);
+
+                if (r.status === 404) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">No se encontraron usuarios para esa ficha</td></tr>`;
+                    mostrarEstado(`ℹ No hay usuarios para la ficha ${numeroFicha}`, "info");
+                    return;
+                }
+
+                if (!r.ok) throw new Error("Error al consultar la ficha");
+
+                const usuarios = await r.json();
+                pintarUsuarios(usuarios);
+                mostrarEstado(`✅ ${usuarios.length} usuarios encontrados para la ficha ${numeroFicha}`, "ok");
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Error al buscar usuarios</td></tr>`;
+                mostrarEstado("❌ No se pudo consultar el número de ficha", "error");
+                console.error(error);
+            }
+        }
+
+        document.getElementById("searchInput").addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                buscarPorFicha();
+            }
+        });
+
+        function exportarCSV() {
+            const filas = document.querySelectorAll("#tabla tr");
+            if (filas.length <= 1) return alert("No hay datos");
+
+            let csv = "";
+            filas.forEach(f => {
+                const cols = f.querySelectorAll("th,td");
+                csv += [...cols].map(c => `"${c.innerText}"`).join(",") + "\n";
+            });
+
+            descargar(csv, "usuarios.csv", "text/csv");
+        }
+
+        function exportarXML() {
+            const filas = document.querySelectorAll("#tablaUsuarios tr");
+            if (filas.length === 0) return alert("No hay datos");
+
+            let xml = `<?xml version="1.0"?>\n<usuarios>\n`;
+            filas.forEach(f => {
+                const c = f.children;
+                if (c.length < 8) return;
+
+                xml += `
+  <usuario>
+    <numeroFicha>${c[0].innerText}</numeroFicha>
+    <tipo>${c[1].innerText}</tipo>
+    <rol>${c[2].innerText}</rol>
+    <identificacion>${c[3].innerText}</identificacion>
+    <nombre>${c[4].innerText}</nombre>
+    <apellido>${c[5].innerText}</apellido>
+    <email>${c[6].innerText}</email>
+    <telefono>${c[7].innerText}</telefono>
+  </usuario>`;
+            });
+            xml += `\n</usuarios>`;
+
+            descargar(xml, "usuarios.xml", "application/xml");
+        }
+
+        function exportarPDF() {
+            window.print();
+        }
+
+        function descargar(contenido, nombre, tipo) {
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(new Blob([contenido], { type: tipo }));
+            a.download = nombre;
+            a.click();
+        }
+
+        window.addEventListener("DOMContentLoaded", cargarUsuarios);
+    </script>
+
+</body>
+
+</html>

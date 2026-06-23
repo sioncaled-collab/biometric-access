@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Envío de Correos Masivos</title>
+    <link rel="stylesheet" href="/css/estilo_principal.css">
+</head>
+<body>
+
+<header class="header">
+    <h1>📧 Envío de Correo Masivo</h1>
+</header>
+
+<main class="main-container">
+    <!-- Mensajes dinámicos -->
+    <div class="mensaje-container">
+        <div th:if="${param.exito}" class="alert alert-success">
+            ✅ ¡Los correos fueron enviados correctamente!
+        </div>
+        <div th:if="${param.error}" class="alert alert-error">
+            ❌ Ocurrió un error al enviar los correos. Verifica los datos e inténtalo de nuevo.
+        </div>
+    </div>
+
+    <!-- Formulario -->
+    <form action="/enviar_correo" method="post" enctype="multipart/form-data" class="formulario-correo">
+        <div class="form-group">
+            <label for="asunto">Asunto:</label>
+            <input type="text" id="asunto" name="asunto" placeholder="Escribe el asunto del correo" required>
+        </div>
+
+        <div class="form-group">
+            <label for="mensaje">Mensaje:</label>
+            <textarea id="mensaje" name="mensaje" rows="6" placeholder="Escribe el contenido del mensaje" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="archivo">Adjuntar archivo (opcional):</label>
+            <input type="file" id="archivo" name="archivo" accept=".pdf,.jpg,.png,.docx,.xlsx">
+        </div>
+
+        <div class="form-group">
+            <label for="destinatarios">Destinatarios (separados por coma):</label>
+            <textarea id="destinatarios" name="destinatarios" rows="3" placeholder="ejemplo@correo.com, usuario@dominio.com" required></textarea>
+        </div>
+
+        <div class="form-group botones">
+            <button type="submit" class="btn btn-primary">📨 Enviar Correos</button>
+            <a href="/" class="btn btn-secundario">⬅ Volver al inicio</a>
+        </div>
+    </form>
+</main>
+
+<footer>
+    <p>© 2025 Biometric Access - Sistema de Envío Masivo</p>
+</footer>
+
+</body>
+</html>
