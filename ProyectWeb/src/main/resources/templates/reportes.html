@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Reportes | Biometric Access</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/estilo_principal.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <img src="/images/Logo B.png" alt="Logo Biometric Access">
+            <h1>Reportes</h1>
+        </div>
+        <nav class="nav-bar">
+            <ul class="menu">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/sobre-nosotros">Sobre Nosotros</a></li>
+                <li><a href="/servicios">Servicios</a></li>
+                <li><a href="/Formulario-de-contacto">Contacto</a></li>
+                <li><a href="/admin" class="active">Administración</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="banner">
+            <h1>Lista de Usuarios</h1>
+            <p>Visualización y exportación segura</p>
+        </section>
+
+        <div class="container_general">
+            <div class="container_menu_lateral">
+
+                <div class="menu-lateral">
+                    <h2>Administración</h2>
+                    <ul>
+                        <li><a href="/gestion_de_usuario">Crear Usuario</a></li>
+                        <li><a href="/Modificar_Usuario">Modificar Usuario</a></li>
+                        <li><a href="/dar_baja_usuario">Dar de baja</a></li>
+                        <li><a href="/correo">Correo Masivo</a></li>
+                        <li><a href="/reportes" class="active">Reportes</a></li>
+                        <li><a href="/biometrico">Biometrico Facial</a></li>
+                        <li><a href="/capturar_foto" class="active">Registrar Facial</a></li>
+                        <li><a href="/logout">Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+
+                <div class="container_menu_derecho">
+
+                    <!-- 🔎 BUSCADOR -->
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Buscar usuario...">
+                    </div>
+
+                    <!-- 📤 EXPORTACIONES -->
+                    <div style="margin:10px 0; display:flex; gap:10px; flex-wrap:wrap;">
+                        <button onclick="exportarCSV()" class="card-button">📊 Excel</button>
+                        <button onclick="exportarXML()" class="card-button">📄 XML</button>
+                        <button onclick="exportarPDF()" class="card-button">🖨 PDF</button>
+                    </div>
+
+                    <!-- 🟡 MENSAJES -->
+                    <div id="estado" style="display:none; padding:10px; border-radius:6px; margin-bottom:10px;"></div>
+
+                    <!-- 📋 TABLA -->
+                    <table class="user-table" id="tabla">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Rol</th>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tablaUsuarios">
+                            <tr>
+                                <td colspan="7" style="text-align:center;">Cargando usuarios...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Biometric Access</p>
+    </footer>
+
+    <script>
+        /* ===============================
+           MENSAJES
+        ================================ */
+        function mostrarEstado(msg, tipo = "info") {
+            const e = document.getElementById("estado");
+            e.style.display = "block";
+            e.textContent = msg;
+            e.style.background = tipo === "error" ? "#ffe5e5" : tipo === "ok" ? "#e6ffea" : "#f1f1f1";
+        }
+
+        /* ===============================
+           CARGAR USUARIOS (SEGURO)
+        ================================ */
+        async function cargarUsuarios() {
+            const tbody = document.getElementById("tablaUsuarios");
+            tbody.innerHTML = "";
+
+            try {
+                const r = await fetch("/api/usuarios");
+                if (!r.ok) throw "API no disponible";
+
+                const usuarios = await r.json();
+                if (!Array.isArray(usuarios) || usuarios.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Sin datos</td></tr>`;
+                    mostrarEstado("ℹ No hay usuarios", "info");
+                    return;
+                }
+
+                usuarios.forEach(u => {
+                    tbody.innerHTML += `
+            <tr>
+                <td>${u.tipoDocumento || "-"}</td>
+                <td>${u.rol || "-"}</td>
+                <td>${u.identificacion || "-"}</td>
+                <td>${u.nombre || "-"}</td>
+                <td>${u.apellido || "-"}</td>
+                <td>${u.email || "-"}</td>
+                <td>${u.telefono || "-"}</td>
+            </tr>`;
+                });
+
+                mostrarEstado(`✅ ${usuarios.length} usuarios cargados`, "ok");
+
+            } catch {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Error backend</td></tr>`;
+                mostrarEstado("❌ No se pudo conectar con el backend", "error");
+            }
+        }
+
+        /* ===============================
+           BUSCADOR
+        ================================ */
+        document.getElementById("searchInput").addEventListener("keyup", e => {
+            const f = e.target.value.toLowerCase();
+            document.querySelectorAll("#tablaUsuarios tr").forEach(tr => {
+                tr.style.display = tr.textContent.toLowerCase().includes(f) ? "" : "none";
+            });
+        });
+
+        /* ===============================
+           EXPORTAR EXCEL (CSV)
+        ================================ */
+        function exportarCSV() {
+            const filas = document.querySelectorAll("#tabla tr");
+            if (filas.length <= 1) return alert("No hay datos");
+
+            let csv = "";
+            filas.forEach(f => {
+                const cols = f.querySelectorAll("th,td");
+                csv += [...cols].map(c => `"${c.innerText}"`).join(",") + "\n";
+            });
+
+            descargar(csv, "usuarios.csv", "text/csv");
+        }
+
+        /* ===============================
+           EXPORTAR XML
+        ================================ */
+        function exportarXML() {
+            const filas = document.querySelectorAll("#tablaUsuarios tr");
+            if (filas.length === 0) return alert("No hay datos");
+
+            let xml = `<?xml version="1.0"?>\n<usuarios>\n`;
+            filas.forEach(f => {
+                const c = f.children;
+                xml += `
+  <usuario>
+    <tipo>${c[0].innerText}</tipo>
+    <rol>${c[1].innerText}</rol>
+    <identificacion>${c[2].innerText}</identificacion>
+    <nombre>${c[3].innerText}</nombre>
+    <apellido>${c[4].innerText}</apellido>
+    <email>${c[5].innerText}</email>
+    <telefono>${c[6].innerText}</telefono>
+  </usuario>`;
+            });
+            xml += `\n</usuarios>`;
+
+            descargar(xml, "usuarios.xml", "application/xml");
+        }
+
+        /* ===============================
+           EXPORTAR PDF (IMPRESIÓN)
+        ================================ */
+        function exportarPDF() {
+            window.print();
+        }
+
+        /* ===============================
+           DESCARGA
+        ================================ */
+        function descargar(contenido, nombre, tipo) {
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(new Blob([contenido], { type: tipo }));
+            a.download = nombre;
+            a.click();
+        }
+
+        window.addEventListener("DOMContentLoaded", cargarUsuarios);
+    </script>
+
+</body>
+
+</html>

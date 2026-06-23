@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Biometric Access</title>
+    <link rel="stylesheet" href="/css/estilo_principal.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">
+            <img src="/images/Logo B.png" alt="Logo Biometric Access">
+            <h1>Login</h1>
+        </div>
+        <nav class="nav-bar">
+            <ul class="menu">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/sobre-nosotros">Sobre Nosotros</a></li>
+                <li><a href="/servicios">Servicios</a></li>
+                <li><a href="/formulario-de-contacto">Contacto</a></li>
+                <li><a href="/login">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="banner_login">
+            <h1>Bienvenido</h1>
+            <p>Inicia sesión para continuar</p>
+        </section>
+
+        <div class="container_login">
+            <div class="image-field">
+                <img src="/images/img23.jpeg" alt="Login Image">
+            </div>
+
+            <div class="text-field_login">
+                <h1>Iniciar Sesión</h1>
+                <form id="loginForm">
+                    <div class="input-group-login">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" name="email" placeholder="Ingresa tu correo" required>
+                    </div>
+                    <div class="input-group-login">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="contraseña" placeholder="Ingresa tu contraseña"
+                            required>
+                    </div>
+                    <button type="submit" class="card-button">Ingresar</button>
+                </form>
+                <p id="mensaje" style="margin-top: 10px; color: #0066cc;"></p>
+
+                <p class="register-link_login">
+                    ¿No tienes una cuenta? <a href="registro.html">Regístrate</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Biometric Access. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        // Enviar login por AJAX al backend Spring Boot
+        document.getElementById("loginForm").addEventListener("submit", async function (e) {
+            e.preventDefault(); // evita recargar la página
+
+            const formData = new URLSearchParams();
+            formData.append("email", document.getElementById("email").value);
+            formData.append("contrasena", document.getElementById("password").value);
+
+            try {
+                const response = await fetch("/api/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: formData
+                });
+
+                const message = await response.text();
+                const msgElement = document.getElementById("mensaje");
+                msgElement.textContent = message;
+
+                if (message === "OK") {
+                    document.getElementById("mensaje").textContent = "Login exitoso";
+                    document.getElementById("mensaje").style.color = "green";
+
+                    setTimeout(() => {
+                        window.location.href = "/gestion_de_usuario";
+                    }, 800);
+                } else {
+                    document.getElementById("mensaje").textContent = "Credenciales incorrectas";
+                    document.getElementById("mensaje").style.color = "red";
+                }
+
+
+            } catch (error) {
+                console.error("Error al iniciar sesión:", error);
+                document.getElementById("mensaje").textContent = "Error de conexión con el servidor.";
+            }
+        });
+    </script>
+</body>
+
+</html>

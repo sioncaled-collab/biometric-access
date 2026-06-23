@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Usuario | Biometric Access</title>
+    <link rel="stylesheet" href="/css/estilo_principal.css">
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="header">
+    <div class="logo">
+        <img src="/images/Logo B.png" alt="Logo Biometric Access">
+        <h1>Biometric Access</h1>
+    </div>
+    <nav class="nav-bar">
+        <ul class="menu">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/sobre-nosotros">Sobre Nosotros</a></li>
+            <li><a href="/servicios">Servicios</a></li>
+            <li><a href="/formulario-de-contacto">Contacto</a></li>
+            <li><a href="/gestion_de_usuario" class="active">Administración</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ================= MAIN ================= -->
+<main>
+
+<section class="banner">
+    <h1>Modificar Usuario</h1>
+    <p>Edita la información de un usuario existente</p>
+</section>
+
+<div class="container_menu_lateral">
+
+    <!-- ===== MENÚ LATERAL ===== -->
+    <div class="menu-lateral">
+        <h2>Menú de Administración</h2>
+        <ul>
+            <li><a href="/gestion_de_usuario">Crear Usuario</a></li>
+            <li><a href="/Modificar_Usuario" class="active">Modificar Usuario</a></li>
+            <li><a href="/dar_baja_usuario">Dar de baja Usuario</a></li>
+            <li><a href="/correo">Correo Masivo</a></li>
+            <li><a href="/reportes">Ver Reportes</a></li>
+            <li><a href="/biometrico">Biometrico Facial</a></li>
+            <li><a href="/capturar_foto" class="active">Registro Facial</a></li>
+            <li><a href="/logout">Cerrar Sesión</a></li>
+        </ul>
+    </div>
+
+    
+    <div class="contenido-principal_gestion_de_usuario">
+        <h3>Editar Usuario</h3>
+
+        
+        <form id="modificarForm" enctype="multipart/form-data">
+
+            <div class="input-group">
+                <label>Identificación</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="identificacion" name="identificacion" required>
+                    <button type="button" id="btnBuscar" class="buscar-button">Buscar</button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Nombres</label>
+                <input type="text" id="nombre" name="nombre" disabled required>
+            </div>
+
+            <div class="input-group">
+                <label>Apellidos</label>
+                <input type="text" id="apellido" name="apellido" disabled required>
+            </div>
+
+            <div class="input-group">
+                <label>Correo Electrónico</label>
+                <input type="email" id="email" name="email" disabled required>
+            </div>
+
+            <div class="input-group">
+                <label>Teléfono</label>
+                <input type="text" id="telefono" name="telefono" disabled required>
+            </div>
+
+            <div class="input-group">
+                <label>Rol</label>
+                <select id="rol" name="rol" disabled>
+                    <option value="coordinador">Coordinador</option>
+                    <option value="administrador">Administrador</option>
+                    <option value="instructor">Instructor</option>
+                    <option value="guarda_seguridad">Guarda de Seguridad</option>
+                    <option value="aprendiz">Aprendiz</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Nueva Contraseña (opcional)</label>
+                <input type="password" id="contrasena" name="contrasena" disabled>
+            </div>
+
+            <div class="input-group">
+                <label>Actualizar Foto (JPG)</label>
+                <input type="file" name="archivo" accept=".jpg,.jpeg" disabled>
+            </div>
+
+            <button type="submit" class="card-button" disabled id="btnGuardar">
+                Guardar Cambios
+            </button>
+
+        </form>
+    </div>
+</div>
+
+</main>
+
+<!-- ================= TOAST ================= -->
+<div id="toast-success" class="toast-success">✅ Usuario actualizado correctamente</div>
+<div id="toast-error" class="toast-error">❌ Error al actualizar el usuario</div>
+
+<footer>
+    <p>&copy; 2025 Biometric Access. Todos los derechos reservados.</p>
+</footer>
+
+<!-- ================= JS ================= -->
+<script>
+const enableForm = () => {
+    document.querySelectorAll("#modificarForm input, #modificarForm select, #btnGuardar")
+        .forEach(el => el.disabled = false);
+};
+
+// 🔍 BUSCAR USUARIO
+document.getElementById("btnBuscar").addEventListener("click", async () => {
+    const id = document.getElementById("identificacion").value.trim();
+    if (!id) return alert("Ingresa la identificación");
+
+    const res = await fetch(`/api/usuarios/${id}`);
+    if (!res.ok) return alert("Usuario no encontrado");
+
+    const u = await res.json();
+
+    document.getElementById("nombre").value = u.nombre;
+    document.getElementById("apellido").value = u.apellido;
+    document.getElementById("email").value = u.email;
+    document.getElementById("telefono").value = u.telefono;
+    document.getElementById("rol").value = u.rol;
+
+    enableForm();
+});
+
+// 💾 GUARDAR CAMBIOS
+document.getElementById("modificarForm").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const res = await fetch("/api/usuarios/modificar", {
+        method: "POST",
+        body: formData
+    });
+
+    const r = await res.text();
+    showToast(r === "OK" ? "success" : "error");
+});
+
+function showToast(type) {
+    const toast = document.getElementById(
+        type === "success" ? "toast-success" : "toast-error"
+    );
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3000);
+}
+</script>
+
+<!-- ================= CSS TOAST ================= -->
+<style>
+.toast-success, .toast-error {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 14px 22px;
+    border-radius: 6px;
+    color: #fff;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all .3s ease;
+    z-index: 9999;
+}
+.toast-success { background:#4CAF50; }
+.toast-error { background:#e53935; }
+
+.show {
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+}
+</style>
+
+</body>
+</html>

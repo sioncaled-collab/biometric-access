@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biometric Access - Gestión de Usuarios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/estilo_principal.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <h1>Interfaz de Usuario - Biometric Access</h1>
+            <img src="/images/Logo B.png" alt="Imagen Logo">
+        </div>
+        <nav class="nav-bar">
+            <ul class="menu">
+                <li><a href="/">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="Titulo">
+            <div class="banner">
+                <h1 class="titulo-desplegable">Gestión de Accesos</h1>
+            </div>
+        </section>
+        
+        <section id="inicio">
+            <div class="card-container1">
+                <!-- Validación de Usuario -->
+                <div class="card1">
+                    <img src="/images/img30.jpeg" alt="Validación de Usuario" class="card-img1">
+                    <div class="card-content">
+                        <h2 class="card-title2">Validación de Usuario</h2>
+                        <p class="card-description2">Valida la identidad de los usuarios.</p>
+                        <button class="card-button1" onclick="window.location.href='validacion.html'">Ingresar</button>
+                    </div>
+                </div>
+                <!-- Búsqueda de Equipos -->
+                <div class="card1">
+                    <img src="/images/img31.jpeg" alt="Búsqueda de Equipos" class="card-img1">
+                    <div class="card-content1">
+                        <br>
+                        <h2 class="card-title2">Búsqueda de Equipos</h2>
+                        <p class="card-description2">Consulta los equipos personales.</p>
+                        <button class="card-button1" onclick="window.location.href='equipos.html'">Buscar</button>
+                    </div>
+                </div>
+                <!-- Consultas de Asistencias -->
+                <div class="card1">
+                    <img src="/images/img32.jpeg" alt="Consultas de Asistencias" class="card-img1">
+                    <div class="card-content">
+                        <h2 class="card-title2">Consultas de Asistencias</h2>
+                        <p class="card-description2">Revisa las asistencias registradas en el sistema.</p>
+                        <button class="card-button1" onclick="window.location.href='asistencias.html'">Consultar</button>
+                    </div>
+                </div>
+                <!-- Verificar Historial de Accesos -->
+                <div class="card1">
+                    <img src="/images/img33.jpeg" alt="Historial de Accesos" class="card-img1">
+                    <div class="card-content">
+                        <h2 class="card-title2">Historial de Accesos</h2>
+                        <p class="card-description2">Consulta el historial de accesos de los usuarios.</p>
+                        <button class="card-button1" onclick="window.location.href='historial.html'">Verificar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Biometric Access. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Administración</title>
+    <link rel="stylesheet" href="/css/estilo_principal.css"> <!-- Aquí puedes agregar un archivo CSS específico para la administración -->
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <h1>Biometric Access</h1>
+            <img src="/images/Logo B.png" alt="Logo Biometric Access">
+        </div>
+        <nav class="nav-bar">
+            <ul class="menu">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/sobre-nosotros">Sobre Nosotros</a></li>
+                <li><a href="/servicios">Servicios</a></li>
+                <li><a href="/formulario-de-contacto">Contacto</a></li>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/admin" class="active">Administración</a></li> <!-- Agregado el enlace a la sección de administración -->
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="banner">
+            <h2>Panel de Administración</h2>
+            <p>Bienvenido, administrador. Aquí puedes gestionar la plataforma.</p>
+        </section>
+        
+        <div class="container">
+            <div class="menu-lateral">
+                <h2>Menú de Administración</h2>
+                <ul>
+                    <li><a href="/gestion_de_usuario">Crear Usuarios</a></li>
+                    <li><a href="/modificar-usuarios">Modificar Usuarios</a></li>
+                    <li><a href="/dar.de.baja">Dar de baja Usuarios</a></li>
+                    <li><a href="/configuraciones">Configuraciones</a></li>
+                    <li><a href="/reportes">Ver Reportes</a></li>
+                    <li><a href="/actividad">Actividad Reciente</a></li>
+                    <li><a href="/logout">Cerrar Sesión</a></li>
+                </ul>
+            </div>
+            <div class="contenido-principal">
+                <h3>Bienvenido a la Plataforma de Administración</h3>
+                <p>Aquí puedes gestionar todos los aspectos de la plataforma, como los usuarios y configuraciones.</p>
+                <div class="dashboard">
+                    <div class="card">
+                        <h4>Usuarios Activos</h4>
+                        <p>10</p>
+                    </div>
+                    <div class="card">
+                        <h4>Reportes Pendientes</h4>
+                        <p>3</p>
+                    </div>
+                    <div class="card">
+                        <h4>Configuraciones Recientes</h4>
+                        <p>4</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 Biometric Access. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>
