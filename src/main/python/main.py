@@ -470,3 +470,4 @@ if __name__ == "__main__":
         port=8000,
         reload=True
     )
+    uvicorn.run(app, host=host, port=port)
