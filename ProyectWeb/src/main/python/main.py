@@ -35,17 +35,17 @@ os.makedirs(CARPETA_USUARIOS, exist_ok=True)
 # Umbral de acceso.
 # Si niega demasiado, puedes subirlo a 0.30 o 0.35.
 # Si permite demasiado, bájalo a 0.22 o 0.20.
-UMBRAL_ACCESO = 0.25
+UMBRAL_ACCESO = 0.68
 
 # Margen entre el mejor usuario y el segundo mejor.
 # Evita accesos ambiguos.
-MARGEN_SEGURIDAD = 0.10
+MARGEN_SEGURIDAD = 0.00
 
 # Máximo de fotos permitidas por usuario
 MAX_FOTOS_POR_USUARIO = 5
 
 # Modelo de reconocimiento
-MODELO_RECONOCIMIENTO = "Facenet512"
+MODELO_RECONOCIMIENTO = "VGG-Face"
 
 # Detector
 DETECTOR_BACKEND = "opencv"
