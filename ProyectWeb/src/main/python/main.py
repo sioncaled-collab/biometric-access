@@ -9,42 +9,109 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# ======== CORS (OBLIGATORIO) =========
+# ======== CORS =========
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# =========== Cargar varios rostros registrados ==============
+# Carpeta de usuarios
+CARPETA_USUARIOS = "usuarios"
+os.makedirs(CARPETA_USUARIOS, exist_ok=True)
+
 USUARIOS = []
 
-ruta_usuarios = "usuarios"   # Carpeta con imágenes permitidas
 
-for archivo in os.listdir(ruta_usuarios):
-    if archivo.lower().endswith((".jpg", ".jpeg", ".png")):
-        path = f"{ruta_usuarios}/{archivo}"
-        USUARIOS.append({
-            "nombre": os.path.splitext(archivo)[0],
-            "ruta": path
-        })
-        print(f"[OK] Usuario cargado: {archivo}")
+def cargar_usuarios():
+    """
+    Carga/recalcula la lista de rostros registrados desde la carpeta usuarios.
+    """
+    global USUARIOS
 
-class Imagen(BaseModel):
+    USUARIOS = []
+
+    if not os.path.exists(CARPETA_USUARIOS):
+        os.makedirs(CARPETA_USUARIOS, exist_ok=True)
+
+    for archivo in os.listdir(CARPETA_USUARIOS):
+        if archivo.lower().endswith((".jpg", ".jpeg", ".png")):
+            path = os.path.join(CARPETA_USUARIOS, archivo)
+
+            USUARIOS.append({
+                "nombre": os.path.splitext(archivo)[0],
+                "ruta": path
+            })
+
+            print(f"[OK] Usuario cargado: {archivo}")
+
+    print(f"[INFO] Total usuarios cargados: {len(USUARIOS)}")
+
+
+# Cargar usuarios al iniciar
+cargar_usuarios()
+
+
+class ImagenValidacion(BaseModel):
     imagen: str
 
-# ============== Endpoint de validación ==================
+
+class ImagenRegistro(BaseModel):
+    imagen: str
+    nombre: str
+
+
+@app.get("/")
+def health():
+    return {
+        "estado": "Servidor biométrico activo",
+        "usuarios_cargados": len(USUARIOS)
+    }
+
+
+@app.get("/usuarios_cargados")
+def usuarios_cargados():
+    return {
+        "total": len(USUARIOS),
+        "usuarios": USUARIOS
+    }
+
+
+@app.post("/recargar_usuarios")
+def recargar_usuarios():
+    cargar_usuarios()
+    return {
+        "resultado": "recargado",
+        "total": len(USUARIOS)
+    }
+
+
 @app.post("/validar")
-async def validar(imagen: Imagen):
+async def validar(data: ImagenValidacion):
 
-    # Convertir base64 -> OpenCV
-    data = imagen.imagen.split(",")[1]
-    img_bytes = base64.b64decode(data)
-    frame = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
+    if not USUARIOS:
+        cargar_usuarios()
 
-    # Probar todos los usuarios cargados
+    try:
+        base64_img = data.imagen.split(",")[1]
+        img_bytes = base64.b64decode(base64_img)
+        frame = cv2.imdecode(np.frombuffer(img_bytes, np.uint8), cv2.IMREAD_COLOR)
+
+        if frame is None:
+            return {
+                "resultado": "denegado",
+                "mensaje": "No se pudo leer la imagen enviada"
+            }
+
+    except Exception as e:
+        print("[ERROR] Error procesando imagen recibida:", e)
+        return {
+            "resultado": "denegado",
+            "mensaje": "Imagen inválida"
+        }
+
     for usuario in USUARIOS:
         try:
             result = DeepFace.verify(
@@ -54,7 +121,9 @@ async def validar(imagen: Imagen):
                 enforce_detection=False
             )
 
-            if result["verified"]:
+            print(f"[INFO] Comparando con {usuario['nombre']}: {result}")
+
+            if result.get("verified"):
                 return {
                     "resultado": "acceso",
                     "persona": usuario["nombre"],
@@ -62,35 +131,56 @@ async def validar(imagen: Imagen):
                 }
 
         except Exception as e:
-            print(f"[Error comparando con {usuario['nombre']}]:", e)
+            print(f"[ERROR] Comparando con {usuario['nombre']}:", e)
 
-    return {"resultado": "denegado"}
-
-class Imagen(BaseModel):
-    imagen: str
-    nombre: str
+    return {
+        "resultado": "denegado"
+    }
 
 
 @app.post("/guardar_rostro")
-def guardar_rostro(data: Imagen):
+def guardar_rostro(data: ImagenRegistro):
 
-    base64_img = data.imagen.split(",")[1]
+    try:
+        base64_img = data.imagen.split(",")[1]
+        img_bytes = base64.b64decode(base64_img)
+        np_arr = np.frombuffer(img_bytes, np.uint8)
+        img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
-    img_bytes = base64.b64decode(base64_img)
+        if img is None:
+            return {
+                "resultado": "error",
+                "mensaje": "No se pudo procesar la imagen"
+            }
 
-    np_arr = np.frombuffer(img_bytes, np.uint8)
+        nombre_limpio = data.nombre.strip().replace(" ", "_")
+        ruta = os.path.join(CARPETA_USUARIOS, f"{nombre_limpio}.jpg")
 
-    img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        cv2.imwrite(ruta, img)
 
-    carpeta = "usuarios"
+        # Recargar usuarios después de guardar
+        cargar_usuarios()
 
-    os.makedirs(carpeta, exist_ok=True)
+        return {
+            "resultado": "guardado",
+            "archivo": ruta,
+            "usuario": nombre_limpio,
+            "total_usuarios_cargados": len(USUARIOS)
+        }
 
-    ruta = f"{carpeta}/{data.nombre}.jpg"
+    except Exception as e:
+        print("[ERROR] Guardando rostro:", e)
 
-    cv2.imwrite(ruta, img)
+        return {
+            "resultado": "error",
+            "mensaje": str(e)
+        }
 
-    return {
-        "resultado": "guardado",
-        "archivo": ruta
-    }
+
+if __name__ == "__main__":
+    import uvicorn
+
+    host = os.getenv("PYTHON_HOST", "127.0.0.1")
+    port = int(os.getenv("PYTHON_PORT", "8000"))
+
+    uvicorn.run(app, host=host, port=port)
