@@ -24,27 +24,27 @@ app = FastAPI()
 # Ruta absoluta del directorio donde está este main.py
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Carpeta real donde viven las imágenes de usuarios
-# En Railway quedará algo como:
+# Carpeta real donde viven las imágenes de usuarios.
+# En Railway normalmente será:
 # /app/src/main/python/usuarios
 CARPETA_USUARIOS = os.path.join(BASE_DIR, "usuarios")
 
 # Crear carpeta si no existe
 os.makedirs(CARPETA_USUARIOS, exist_ok=True)
 
-# Umbral de acceso.
-# Si niega demasiado, puedes subirlo a 0.30 o 0.35.
-# Si permite demasiado, bájalo a 0.22 o 0.20.
+# Ajuste para Railway:
+# 0.25 era demasiado estricto para Facenet512/cosine.
+# Con VGG-Face + cosine, 0.68 permite validar de forma más realista.
 UMBRAL_ACCESO = 0.68
 
-# Margen entre el mejor usuario y el segundo mejor.
-# Evita accesos ambiguos.
+# Por ahora se desactiva el bloqueo por margen de seguridad.
+# Esto evita que niegue por coincidencia ambigua mientras estabilizamos el sistema.
 MARGEN_SEGURIDAD = 0.00
 
-# Máximo de fotos permitidas por usuario
+# Cantidad máxima de fotos por usuario
 MAX_FOTOS_POR_USUARIO = 5
 
-# Modelo de reconocimiento
+# Modelo recomendado para esta fase porque es más liviano que Facenet512 en Railway
 MODELO_RECONOCIMIENTO = "VGG-Face"
 
 # Detector
@@ -91,6 +91,7 @@ def convertir_base64_a_frame(base64_string: str):
     """
 
     if not base64_string or not isinstance(base64_string, str):
+        print("[ERROR] Imagen base64 vacía o inválida", flush=True)
         return None
 
     try:
@@ -101,10 +102,13 @@ def convertir_base64_a_frame(base64_string: str):
         np_arr = np.frombuffer(img_bytes, np.uint8)
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
+        if frame is None:
+            print("[ERROR] OpenCV no pudo decodificar la imagen", flush=True)
+
         return frame
 
     except (binascii.Error, ValueError, Exception) as e:
-        print(f"[ERROR] No se pudo convertir la imagen base64: {e}")
+        print(f"[ERROR] No se pudo convertir la imagen base64: {e}", flush=True)
         return None
 
 
@@ -137,10 +141,8 @@ def normalizar_ruta(ruta_archivo):
 
 def validar_calidad_imagen(img):
     """
-    Valida calidad básica de la imagen:
-    - Tamaño mínimo.
-    - Brillo aceptable.
-    - Nitidez aceptable.
+    Valida calidad básica de la imagen.
+    Se deja menos estricto para Railway/cámara web.
     """
 
     if img is None:
@@ -148,30 +150,37 @@ def validar_calidad_imagen(img):
 
     alto, ancho = img.shape[:2]
 
-    if ancho < 300 or alto < 300:
+    print(f"[INFO] Tamaño imagen recibida: ancho={ancho}, alto={alto}", flush=True)
+
+    if ancho < 200 or alto < 200:
         return False, "La imagen es muy pequeña. Acércate más a la cámara"
 
     gris = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     brillo = np.mean(gris)
-
-    if brillo < 40:
-        return False, "La imagen está muy oscura"
-
-    if brillo > 245:
-        return False, "La imagen está demasiado iluminada"
-
     nitidez = cv2.Laplacian(gris, cv2.CV_64F).var()
 
-    if nitidez < 25:
-        return False, "La imagen está borrosa. Intenta nuevamente"
+    print(f"[INFO] Brillo imagen: {brillo}", flush=True)
+    print(f"[INFO] Nitidez imagen: {nitidez}", flush=True)
+
+    if brillo < 25:
+        return False, "La imagen está muy oscura"
+
+    if brillo > 250:
+        return False, "La imagen está demasiado iluminada"
+
+    if nitidez < 10:
+        return False, "La imagen está muy borrosa. Intenta nuevamente"
 
     return True, "Calidad de imagen válida"
 
 
 def validar_rostro_en_imagen(img):
     """
-    Valida que la imagen tenga un rostro detectable.
+    Valida la imagen antes de comparar.
+
+    En Railway se usa enforce_detection=False para no bloquear por fallos
+    de detección causados por luz, cámara o posición del rostro.
     """
 
     if img is None:
@@ -180,21 +189,19 @@ def validar_rostro_en_imagen(img):
     calidad_valida, mensaje_calidad = validar_calidad_imagen(img)
 
     if not calidad_valida:
+        print(f"[WARN] Calidad inválida: {mensaje_calidad}", flush=True)
         return False, mensaje_calidad
 
     try:
         rostros = DeepFace.extract_faces(
             img_path=img,
             detector_backend=DETECTOR_BACKEND,
-            enforce_detection=True,
+            enforce_detection=False,
             align=True
         )
 
-        if not rostros:
-            return False, "No se detectó ningún rostro en la imagen"
-
-        if len(rostros) > 1:
-            return False, "Se detectó más de un rostro en la imagen"
+        cantidad = len(rostros) if rostros else 0
+        print(f"[INFO] Rostros detectados aproximados: {cantidad}", flush=True)
 
         return True, "Rostro válido"
 
@@ -227,6 +234,11 @@ def obtener_ruta_rostro(identificacion: str, numero_foto: int = 1):
     /app/src/main/python/usuarios/1032388086/rostro_1.jpg
     """
 
+    try:
+        numero_foto = int(numero_foto)
+    except Exception:
+        numero_foto = 1
+
     if numero_foto < 1:
         numero_foto = 1
 
@@ -254,12 +266,13 @@ def obtener_imagenes_usuario(ruta_archivo):
     imagenes = []
 
     if not ruta_archivo:
+        print("[WARN] Ruta archivo vacía en BD", flush=True)
         return imagenes
 
     ruta_normalizada = normalizar_ruta(ruta_archivo)
 
-    print(f"[INFO] Ruta original BD: {ruta_archivo}")
-    print(f"[INFO] Ruta normalizada: {ruta_normalizada}")
+    print(f"[INFO] Ruta original BD: {ruta_archivo}", flush=True)
+    print(f"[INFO] Ruta normalizada: {ruta_normalizada}", flush=True)
 
     extensiones_validas = (".jpg", ".jpeg", ".png")
 
@@ -268,6 +281,7 @@ def obtener_imagenes_usuario(ruta_archivo):
         if ruta_normalizada.lower().endswith(extensiones_validas):
             imagenes.append(ruta_normalizada)
 
+        print(f"[INFO] Imágenes encontradas por archivo directo: {imagenes}", flush=True)
         return imagenes
 
     # Caso 2: la ruta es una carpeta de usuario
@@ -278,11 +292,14 @@ def obtener_imagenes_usuario(ruta_archivo):
             if os.path.isfile(ruta_completa) and archivo.lower().endswith(extensiones_validas):
                 imagenes.append(ruta_completa)
 
+        print(f"[INFO] Imágenes encontradas por carpeta directa: {imagenes}", flush=True)
         return imagenes
 
     # Caso 3: si la BD tiene usuarios/1032388086 pero existe como carpeta en CARPETA_USUARIOS
     posible_identificacion = os.path.basename(str(ruta_archivo).replace("\\", "/"))
     posible_carpeta = os.path.join(CARPETA_USUARIOS, posible_identificacion)
+
+    print(f"[INFO] Probando posible carpeta: {posible_carpeta}", flush=True)
 
     if os.path.isdir(posible_carpeta):
         for archivo in os.listdir(posible_carpeta):
@@ -291,14 +308,18 @@ def obtener_imagenes_usuario(ruta_archivo):
             if os.path.isfile(ruta_completa) and archivo.lower().endswith(extensiones_validas):
                 imagenes.append(ruta_completa)
 
+        print(f"[INFO] Imágenes encontradas por posible carpeta: {imagenes}", flush=True)
         return imagenes
 
     # Caso 4: si la BD apunta a usuarios/1032388086 y existe usuarios/1032388086.jpg
     posible_archivo = os.path.join(CARPETA_USUARIOS, f"{posible_identificacion}.jpg")
 
+    print(f"[INFO] Probando posible archivo: {posible_archivo}", flush=True)
+
     if os.path.isfile(posible_archivo):
         imagenes.append(posible_archivo)
 
+    print(f"[INFO] Imágenes finales encontradas: {imagenes}", flush=True)
     return imagenes
 
 
@@ -314,7 +335,8 @@ def comparar_con_usuario(frame, usuario):
     if not imagenes_usuario:
         print(
             f"[WARN] No hay imágenes válidas para usuario "
-            f"{usuario.get('identificacion')}: {ruta_archivo}"
+            f"{usuario.get('identificacion')}: {ruta_archivo}",
+            flush=True
         )
         return None
 
@@ -322,6 +344,12 @@ def comparar_con_usuario(frame, usuario):
 
     for imagen_registrada in imagenes_usuario:
         try:
+            print(
+                f"[INFO] Comparando usuario {usuario.get('identificacion')} "
+                f"contra imagen {imagen_registrada}",
+                flush=True
+            )
+
             result = DeepFace.verify(
                 img1_path=frame,
                 img2_path=imagen_registrada,
@@ -338,7 +366,8 @@ def comparar_con_usuario(frame, usuario):
                 f"[VALIDACION] Usuario: {usuario.get('identificacion')} | "
                 f"Imagen: {imagen_registrada} | "
                 f"Distancia: {distancia} | "
-                f"Verified DeepFace: {result.get('verified')}"
+                f"Verified DeepFace: {result.get('verified')}",
+                flush=True
             )
 
             if distancia < mejor_distancia_usuario:
@@ -347,7 +376,8 @@ def comparar_con_usuario(frame, usuario):
         except Exception as e:
             print(
                 f"[ERROR] Comparando usuario {usuario.get('identificacion')} "
-                f"con imagen {imagen_registrada}: {e}"
+                f"con imagen {imagen_registrada}: {e}",
+                flush=True
             )
 
     if mejor_distancia_usuario == 999:
@@ -366,7 +396,11 @@ def health():
         "estado": "Servidor biométrico activo",
         "base_dir": BASE_DIR,
         "carpeta_usuarios": CARPETA_USUARIOS,
-        "existe_carpeta_usuarios": os.path.exists(CARPETA_USUARIOS)
+        "existe_carpeta_usuarios": os.path.exists(CARPETA_USUARIOS),
+        "modelo": MODELO_RECONOCIMIENTO,
+        "detector": DETECTOR_BACKEND,
+        "metric": DISTANCE_METRIC,
+        "umbral": UMBRAL_ACCESO
     }
 
 
@@ -404,6 +438,20 @@ def debug_usuarios():
     return resultado
 
 
+@app.get("/debug/bd")
+def debug_bd():
+    """
+    Permite revisar qué usuarios con rostro está devolviendo la base.
+    """
+
+    usuarios = obtener_usuarios_con_rostro()
+
+    return {
+        "total": len(usuarios) if usuarios else 0,
+        "usuarios": usuarios
+    }
+
+
 # =====================================================
 # ENDPOINT VALIDAR
 # =====================================================
@@ -411,7 +459,7 @@ def debug_usuarios():
 @app.post("/validar")
 async def validar(imagen: ImagenValidacion):
 
-    print("[INFO] Iniciando validación biométrica")
+    print("[INFO] Iniciando validación biométrica", flush=True)
 
     frame = convertir_base64_a_frame(imagen.imagen)
 
@@ -431,7 +479,7 @@ async def validar(imagen: ImagenValidacion):
 
     usuarios = obtener_usuarios_con_rostro()
 
-    print(f"[INFO] Usuarios con rostro desde BD: {len(usuarios) if usuarios else 0}")
+    print(f"[INFO] Usuarios con rostro desde BD: {len(usuarios) if usuarios else 0}", flush=True)
 
     if not usuarios:
         return {
@@ -442,6 +490,14 @@ async def validar(imagen: ImagenValidacion):
     resultados = []
 
     for usuario in usuarios:
+        print(
+            f"[INFO] Evaluando usuario BD: "
+            f"id={usuario.get('id')} | "
+            f"identificacion={usuario.get('identificacion')} | "
+            f"archivo={usuario.get('archivo')}",
+            flush=True
+        )
+
         distancia_usuario = comparar_con_usuario(frame, usuario)
 
         if distancia_usuario is not None:
@@ -476,10 +532,13 @@ async def validar(imagen: ImagenValidacion):
         f"[RESULTADO FINAL] Mejor usuario: {mejor_usuario.get('identificacion')} | "
         f"Mejor distancia: {mejor_distancia} | "
         f"Segunda distancia: {segunda_distancia} | "
-        f"Diferencia seguridad: {diferencia_seguridad}"
+        f"Diferencia seguridad: {diferencia_seguridad} | "
+        f"Umbral: {UMBRAL_ACCESO}",
+        flush=True
     )
 
-    if mejor_distancia <= UMBRAL_ACCESO and diferencia_seguridad >= MARGEN_SEGURIDAD:
+    # Acceso basado únicamente en umbral mientras estabilizamos el reconocimiento.
+    if mejor_distancia <= UMBRAL_ACCESO:
         return {
             "resultado": "acceso",
             "persona": f"{mejor_usuario.get('nombre')} {mejor_usuario.get('apellido')}",
@@ -494,14 +553,9 @@ async def validar(imagen: ImagenValidacion):
             "margen_seguridad": MARGEN_SEGURIDAD
         }
 
-    if mejor_distancia > UMBRAL_ACCESO:
-        mensaje = "No se encontró coincidencia facial suficientemente segura"
-    else:
-        mensaje = "Coincidencia ambigua: el rostro se parece a más de un usuario"
-
     return {
         "resultado": "denegado",
-        "mensaje": mensaje,
+        "mensaje": "No se encontró coincidencia facial suficientemente segura",
         "distancia_minima": mejor_distancia,
         "segunda_distancia": segunda_distancia,
         "diferencia_seguridad": diferencia_seguridad,
@@ -517,11 +571,12 @@ async def validar(imagen: ImagenValidacion):
 @app.post("/guardar_rostro")
 def guardar_rostro(data: ImagenRegistro):
 
-    print(f"[INFO] Guardando rostro para identificación: {data.identificacion}")
+    print(f"[INFO] Guardando rostro para identificación: {data.identificacion}", flush=True)
 
     usuario = obtener_usuario_por_identificacion(data.identificacion)
 
     if not usuario:
+        print(f"[ERROR] No existe usuario con identificación: {data.identificacion}", flush=True)
         return {
             "resultado": "error",
             "mensaje": "No existe un usuario con esa identificación"
@@ -545,6 +600,11 @@ def guardar_rostro(data: ImagenRegistro):
 
     numero_foto = data.numero_foto if data.numero_foto else 1
 
+    try:
+        numero_foto = int(numero_foto)
+    except Exception:
+        numero_foto = 1
+
     if numero_foto < 1 or numero_foto > MAX_FOTOS_POR_USUARIO:
         return {
             "resultado": "error",
@@ -553,15 +613,20 @@ def guardar_rostro(data: ImagenRegistro):
 
     ruta = obtener_ruta_rostro(data.identificacion, numero_foto)
 
+    print(f"[INFO] Guardando imagen en: {ruta}", flush=True)
+
     guardado = cv2.imwrite(ruta, img)
 
     if not guardado:
+        print("[ERROR] cv2.imwrite retornó False", flush=True)
         return {
             "resultado": "error",
             "mensaje": "No fue posible guardar la imagen"
         }
 
     carpeta_usuario = obtener_carpeta_usuario(data.identificacion)
+
+    print(f"[INFO] Actualizando BD con carpeta: {carpeta_usuario}", flush=True)
 
     actualizado = actualizar_ruta_rostro(data.identificacion, carpeta_usuario)
 
@@ -590,5 +655,7 @@ if __name__ == "__main__":
 
     host = os.getenv("PYTHON_HOST", "127.0.0.1")
     port = int(os.getenv("PYTHON_PORT", "8000"))
+
+    print(f"[INFO] Iniciando Uvicorn en {host}:{port}", flush=True)
 
     uvicorn.run(app, host=host, port=port)
