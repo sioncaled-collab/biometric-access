@@ -178,7 +178,7 @@ ctx.drawImage(video,0,0);
 
 let imgBase64=canvas.toDataURL("image/jpeg");
 
-fetch("http://127.0.0.1:8000/validar",{
+fetch("/api/biometrico/validar",{
 
 method:"POST",
 
