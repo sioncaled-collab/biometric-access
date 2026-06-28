@@ -166,66 +166,82 @@ border:1px solid #ccc;
 
 const video = document.getElementById("video");
 
-navigator.mediaDevices.getUserMedia({video:true})
-.then(stream=>{
-video.srcObject = stream;
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => {
+    video.srcObject = stream;
+})
+.catch(error => {
+    console.error("Error accediendo a cámara:", error);
+    alert("No se pudo acceder a la cámara");
 });
 
-let imagenBase64="";
+let imagenBase64 = "";
 
-function capturar(){
+function capturar() {
 
-let canvas=document.getElementById("canvas");
+    let canvas = document.getElementById("canvas");
 
-canvas.width=video.videoWidth;
-canvas.height=video.videoHeight;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
-let ctx=canvas.getContext("2d");
+    let ctx = canvas.getContext("2d");
 
-ctx.drawImage(video,0,0);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-imagenBase64=canvas.toDataURL("image/jpeg");
+    imagenBase64 = canvas.toDataURL("image/jpeg");
 
-document.getElementById("preview").src=imagenBase64;
-
+    document.getElementById("preview").src = imagenBase64;
 }
 
-function guardar(){
+function guardar() {
 
-let nombre=document.getElementById("nombreUsuario").value;
+    let identificacion = document.getElementById("nombreUsuario").value.trim();
 
-if(nombre===""){
-alert("Debe ingresar el nombre del usuario");
-return;
-}
+    if (identificacion === "") {
+        alert("Debe ingresar la identificación del usuario");
+        return;
+    }
 
-fetch("http://127.0.0.1:8000/guardar_rostro",{
+    if (imagenBase64 === "") {
+        alert("Primero debe capturar la foto");
+        return;
+    }
 
-method:"POST",
+    fetch("/api/biometrico/guardar_rostro", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            imagen: imagenBase64,
+            identificacion: identificacion,
+            numero_foto: 1
+        })
+    })
+    .then(async response => {
+        const data = await response.json();
 
-headers:{
-"Content-Type":"application/json"
-},
+        if (!response.ok) {
+            throw new Error(data.mensaje || "Error guardando rostro");
+        }
 
-body:JSON.stringify({
-imagen:imagenBase64,
-nombre:nombre
-})
+        return data;
+    })
+    .then(data => {
 
-})
+        console.log("Respuesta guardar rostro:", data);
 
-.then(r=>r.json())
+        if (data.resultado === "guardado") {
+            alert("Rostro guardado correctamente para: " + data.identificacion);
+        } else {
+            alert(data.mensaje || "No se pudo guardar el rostro");
+        }
 
-.then(data=>{
-
-alert("Imagen guardada como: "+nombre+".jpg");
-
-})
-
-.catch(()=>{
-alert("Error conectando con servidor biométrico");
-});
-
+    })
+    .catch(error => {
+        console.error("Error conectando con servidor biométrico:", error);
+        alert("Error conectando con servidor biométrico");
+    });
 }
 
 </script>
