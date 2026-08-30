@@ -1,6 +1,7 @@
 package com.biometricAccess.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -23,6 +24,12 @@ public class WebController {
     public WebController(RegistroAccesoService registroAccesoService, EquipoService equipoService) {
         this.registroAccesoService = registroAccesoService;
         this.equipoService = equipoService;
+    }
+        // Verificación Google Search Console
+    @GetMapping("/googled68404c569e55e73.html")
+    @ResponseBody
+    public String googleVerification() {
+        return "google-site-verification: googled68404c569e55e73.html";
     }
 
     @GetMapping("/")
